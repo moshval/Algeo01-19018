@@ -36,6 +36,7 @@ public class Matriks{
 
     public void tulisMatriks(){ //Menuliskan matriks ke layar
         int i,j;
+        System.out.println("Matriks anda adalah : ");
         for ( i = 0; i < this.brs; i++) {
             for ( j = 0; j < this.kol; j++) {
                 System.out.printf("%.4f ",this.M[i][j]);
