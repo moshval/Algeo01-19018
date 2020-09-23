@@ -27,7 +27,7 @@ public class Matriks{
         this.brs = in.nextInt();
         System.out.print("Input jumlah kolom : ");
         this.kol = in.nextInt();
-        System.out.print("Input elemen matriks : ");
+        System.out.println("Input elemen matriks : ");
         for (i = 0; i < this.brs; i++) {
             for (j = 0; j < this.kol; j++) {
                 this.M[i][j] = in.nextDouble();
