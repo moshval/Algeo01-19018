@@ -166,7 +166,24 @@ public class Matriks{
         return inv;
     }
 
+    public void swapBrs(Matriks M, int i_1, int i_2){
+        int j;
+        float temp;
+        M.kol = this.kol;
+        for (j = 0; j < this.kol; j++){
+            temp = this.M[i_1][j];
+            this.M[i_1][j] = this.M[i_2][j];
+            this.M[i_2][j] = temp;
+        }
+    }
 
+    public void kaliBrs(Matriks M, int i, int k){
+        int j;
+        M.kol = this.kol;
+        for(j = 0; j < this.kol;j++){
+            this.M[i][j] = (k)*(this.M[i][j]);
+        }
+    }
 
 
 
