@@ -1,5 +1,11 @@
-package algeo1;
-import java.util.Scanner;
+
+import java.io.*;
+import java.nio.*;
+import java.util.*;
+import java.lang.*;
+
+
+// How to run : javac *.java && java Driver
 
 public class Driver {
 	public static void main(String[] args) {

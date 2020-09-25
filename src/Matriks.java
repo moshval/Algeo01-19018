@@ -1,6 +1,8 @@
-package algeo1;
 
-import java.util.Scanner;
+import java.io.*;
+import java.nio.*;
+import java.util.*;
+import java.lang.*;
 
 public class Matriks {
 	double[][] M = new double[150][150]; // inisialisasi ukuran max 150 x 150
@@ -166,7 +168,7 @@ public class Matriks {
     
     public void swapBrs(Matriks M, int i_1, int i_2){
         int j;
-        float temp;
+        double temp;
         M.kol = this.kol;
         for (j = 0; j < this.kol; j++){
             temp = this.M[i_1][j];
@@ -176,7 +178,7 @@ public class Matriks {
     }
 	
     
-    public void kaliBrs(Matriks M, int i, int k){
+    public void kaliBrs(Matriks M, int i, double k){
         int j;
         M.kol = this.kol;
         for(j = 0; j < this.kol;j++){
