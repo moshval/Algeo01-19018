@@ -189,6 +189,7 @@ public class Matriks {
     public Matriks echelon ()
     {
     	int N = this.brs;
+    	int O = this.kol;
     	int max;
         for (int k = 0; k < N; k++) 
         {
@@ -198,7 +199,7 @@ public class Matriks {
                 if (Math.abs(this.M[i][k]) > Math.abs(this.M[max][k])) 
                     max = i;
  
-            /** swap row in A matrix **/    
+            /** swap row in M matrix **/    
             double[] temp = this.M[k]; 
             this.M[k] = this.M[max]; 
             this.M[max] = temp;
@@ -207,7 +208,7 @@ public class Matriks {
             for (int i = k + 1; i < N; i++) 
             {
                 double factor = this.M[i][k] / this.M[k][k];
-                for (int j = k; j < N; j++) 
+                for (int j = k; j < O; j++) 
                 	this.M[i][j] -= factor * this.M[k][j];
             }
         }
@@ -219,7 +220,7 @@ public class Matriks {
 		}
         for (int i = 0; i < N; i++)
            {
-               for (int j = 0; j < N; j++) 
+               for (int j = 0; j < O; j++) 
                {
             	   this.M[i][j]=this.M[i][j]/divided[i];
                }   
@@ -231,6 +232,7 @@ public class Matriks {
     public Matriks reducedEchelon ()
     {
     	int N = this.brs;
+    	int O = this.kol;
     	int max;
         for (int k = 0; k < N; k++) 
         {
@@ -249,7 +251,7 @@ public class Matriks {
             for (int i = k + 1; i < N; i++) 
             {
                 double factor = this.M[i][k] / this.M[k][k];
-                for (int j = k; j < N; j++) 
+                for (int j = k; j < O; j++)
                 	this.M[i][j] -= factor * this.M[k][j];
             }
         }
@@ -261,19 +263,25 @@ public class Matriks {
 		}
         for (int i = 0; i < N; i++)
            {
-               for (int j = 0; j < N; j++) 
+               for (int j = 0; j < O; j++) 
                {
             	   this.M[i][j]=this.M[i][j]/divided[i];
                }   
            }
-
-        for (int j=N-1; j>0; j=j-1)
+        
+        int mark=0;
+        for (int j=0; j<O; j++)
+        {
+        	if (this.M[N-1][j]==1)
+        		mark=j;
+        }
+        for (int j=mark; j>0; j=j-1)
 		{
 			double divided1 = this.M[j][j];
 			for (int i=j-1; i>=0; i=i-1)
 			{
 				double factor = this.M[i][j]/divided1;
-				for (int l=N-1; l>i;l=l-1)
+				for (int l=O-1; l>i;l=l-1)
 				{
 					this.M[i][l] -= factor * this.M[j][l];
 				}
