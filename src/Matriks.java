@@ -40,6 +40,7 @@ public class Matriks {
         Scanner in = new Scanner(System.in);
         System.out.print("Masukkan nama file matriks (beserta ekstensi, contoh : matriks.txt) : ");
         filename = in.nextLine();
+        filename = "../test/" + filename;
         if(Files.notExists(Paths.get(filename))) {
             System.out.println("File not found, ulangi lagi");
             this.bacafileMatriks();}
@@ -102,6 +103,7 @@ public class Matriks {
         Scanner in = new Scanner(System.in);
         System.out.print("Masukkan nama file tujuan (beserta ekstensi, contoh : matriks.txt) : ");
         filename = in.nextLine();
+        filename = "../test/" + filename;
         try{
             Formatter fw = new Formatter(filename);
             fw.format("%s",mf);
