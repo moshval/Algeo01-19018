@@ -122,9 +122,28 @@ public class Matriks {
         System.out.println("Matriks anda adalah : ");
         for ( i = 0; i < this.brs; i++) {
             for ( j = 0; j < this.kol; j++) {
-                System.out.printf("%.2f ",this.M[i][j] + 0.00);
+                System.out.printf("%.4f ",this.M[i][j] + 0.0000);
             }
             System.out.println();
+        }
+    }
+
+    public void tulisfileSPL(String sol){
+        //Saving to file
+        String filename;
+        Scanner in = new Scanner(System.in);
+        System.out.print("Masukkan nama file tujuan (beserta ekstensi, contoh : matriks.txt) : ");
+        filename = in.nextLine();
+        filename = "../test/" + filename;
+        try{
+            Formatter fw = new Formatter(filename);
+            fw.format("%s",sol);
+            fw.close();
+            System.out.println("Sukses");
+        }
+        catch(IOException e){
+            System.out.println("Error");
+            e.printStackTrace();
         }
     }
 
@@ -227,7 +246,7 @@ public class Matriks {
                     det+=dk.M[i][0] * (mnr.detKofaktor());
                 }
                 else{
-                    det+=dk.M[i][0] * (mnr.detKofaktor()) * -1.00;
+                    det+=dk.M[i][0] * (mnr.detKofaktor()) * -1.0000;
                 }
             }
 
@@ -395,9 +414,9 @@ public class Matriks {
             for (int l = 0; l < cr.kol; l++) {
                 Matriks cm = this.makeCramer(l);
                 Double detcm = cm.detKofaktor();
-                double valx = detcm / crdet + 0.00;
+                double valx = detcm / crdet + 0.0000;
                 System.out.print("X"+(l+1)+" = ");
-                System.out.printf("%.2f",valx);
+                System.out.printf("%.4f",valx);
                 System.out.println(); 
                 sol += "X"+(l+1)+" = "+Double.toString(valx)+"\n";
             }
@@ -405,7 +424,7 @@ public class Matriks {
             int pil = in.nextInt();
            while (pil!=0 && pil!=1){
                 System.out.println("Ulangi lagi");
-                System.out.println("Apakah anda mau menyimpan hasil ke file? (Y/N) : ");
+                System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
                 pil = in.nextInt();
             }
             if(pil==1){
@@ -427,23 +446,166 @@ public class Matriks {
         }
         return mc;
     }
+    public Double kbInterpol(){ //Membaca input interpolasi polinom dari keyboard
+        Scanner in = new Scanner(System.in);
+        int n;
+        System.out.print("Masukkan derajat polinom interpolasi : ");
+        n = in.nextInt();
+        this.brs = n+1;
+        this.kol = n+2;
+        Double x,y;
+        
+        for (int i = 0; i < this.brs; i++) {
+                System.out.print("Masukkan nilai (x"+i+",y"+i+") : ");
+                System.out.println();
+                System.out.print("x"+i+" = ");
+                x = in.nextDouble();
+                System.out.print("y"+i+" = ");
+                y = in.nextDouble();
+                Double xi = 1.0000;
+                for (int j = 0; j < this.kol-1; j++) {
+                    this.M[i][j] = xi;
+                    xi = xi * x; 
+                }
+                this.M[i][this.kol-1] = y;
+            }
+        /*System.out.println("Matriks sistem persamaan interpolasi anda  : ");
+        this.tulisMatriks(); */
+        System.out.println();
+        System.out.print("Masukkan nilai x yang akan ditaksir nilai fungsinya : ");
+        Double xtak;
+        xtak = in.nextDouble();
+        return xtak;
+        }
 
-    public void tulisfileSPL(String sol){
-        //Saving to file
+    public Double bacafileInterpol() throws Exception{ //Membaca input interpolasi dari file.txt
+        Double xtak = 0.0000;
         String filename;
         Scanner in = new Scanner(System.in);
-        System.out.print("Masukkan nama file tujuan (beserta ekstensi, contoh : matriks.txt) : ");
+        System.out.print("Masukkan nama file pasangan titik (x,y) , (beserta ekstensi, contohnya matriks.txt) : ");
         filename = in.nextLine();
         filename = "../test/" + filename;
-        try{
-            Formatter fw = new Formatter(filename);
-            fw.format("%s",sol);
-            fw.close();
-            System.out.println("Sukses");
+        if(Files.notExists(Paths.get(filename))) {
+            System.out.println("File not found, ulangi lagi");
+            this.bacafileInterpol();}
+        else{
+            FileReader fr = (new FileReader(filename));
+            //BufferedReader br = new BufferedReader(fr);
+            int elm;
+            String mat = "";
+            Matriks ip = new Matriks();
+            while((elm=fr.read()) != -1){
+                //System.out.print((char) line);
+                mat +=((char)elm);
+            }
+            mat=mat.trim();
+            //System.out.print(mat);
+            mat+='\n';
+            if (mat.length() != 0){
+                int i = 0;
+                int j = 0;
+                int l = 0;
+                String cc ="";
+                while(l<mat.length()){
+                    if(mat.charAt(l) == ' ') continue;
+                    while ((mat.charAt(l) != ' ' && mat.charAt(l) != '\n')){
+                        cc+=mat.charAt(l);   
+                        l++;
+                    }
+                        ip.M[i][j] = Double.parseDouble(cc);
+                        j++;
+                        cc= "";
+    
+                        if((mat.charAt(l) == '\n')){
+                            i++;
+                            ip.kol = j;
+                            j = 0;
+                         }
+                         l++;
+                }
+                ip.brs = i;
+
+                this.brs = ip.brs;
+                this.kol = this.brs + 1;
+                int r = 0;
+                for (int k = 0; k < this.brs; k++) {
+                    Double xi = 1.0000;
+                    for (int m = 0; m < this.kol - 1; m++) {
+                        this.M[k][m] = xi;
+                        xi = xi*ip.M[r][0];
+                    }
+                    this.M[k][this.kol-1] = ip.M[r][1];
+                    r++;
+                }
+                System.out.println();
+                System.out.print("Masukkan nilai x yang akan ditaksir nilai fungsinya : ");
+                xtak = in.nextDouble();                
+            } 
+    
         }
-        catch(IOException e){
-            System.out.println("Error");
-            e.printStackTrace();
-        }
+        return xtak;
     }
+        public void cramInterpol() throws Exception{ //Interpolasi with kofaktor, asumsi untuk setiap derajat n terdapat tepat n+1 buah titik
+            // sehingga metode cramer valid
+            Scanner in = new Scanner(System.in);
+            System.out.print("Baca dari keyboard(0) atau file(1) ? Input anda : ");
+            Double xtak = 0.0000;
+            int plh = in.nextInt();
+            while(plh!=0 && plh!=1){
+                System.out.print("Ulangi pembacaan. Baca dari keyboard(0) atau file(1) ? ");
+                plh = in.nextInt();
+            }
+            if(plh==0) xtak = this.kbInterpol();
+            else if(plh==1) xtak = this.bacafileInterpol();
+            Matriks cr = new Matriks();
+            cr.brs = this.brs;
+            cr.kol = this.kol - 1;
+            for (int i = 0; i < cr.brs; i++) {
+                for (int j = 0; j < cr.kol; j++) {
+                    cr.M[i][j] = this.M[i][j];
+                }
+            }
+            Double crdet = cr.detKofaktor();
+            if (crdet == 0 || (crdet.isNaN())) {
+                System.out.println("Tidak ada solusi");
+            }
+            else{
+                System.out.println("Hasil Penyelesaian : ");
+                String sol = "P"+(this.brs - 1)+"(x) = ";
+                int pang = 0;
+                Double hasiltak = 0.0000;
+                for (int l = 0; l < cr.kol; l++) {
+                    Matriks cm = this.makeCramer(l);
+                    Double detcm = cm.detKofaktor();
+                    double valx = detcm / crdet + 0.0000;
+                    System.out.print("a"+l+" = ");
+                    System.out.printf("%.4f",valx);
+                    hasiltak += valx * Math.pow(xtak,l);
+                    System.out.println();
+                    if(pang==this.brs-1 && pang!=0) sol+="("+Double.toString(valx)+"x^"+pang+")"; 
+                    else if(pang!=this.brs - 1 && pang!=0) sol += "("+Double.toString(valx)+"x^"+pang+") + ";
+                    else sol+="("+Double.toString(valx)+")"+" + ";
+                    pang++;
+                }
+
+                System.out.println("Polinom interpolasi : ");
+                System.out.println(sol);
+                System.out.printf("Hasil taksiran pada x = %.2f adalah %.4f",xtak,hasiltak);
+                System.out.println();
+                System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+                int pil = in.nextInt();
+
+               while (pil!=0 && pil!=1){
+                    System.out.println("Ulangi lagi");
+                    System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+                    pil = in.nextInt();
+                }
+                if(pil==1){
+                    sol+="\n" + "Taksiran pada x = "+Double.toString(xtak)+" adalah "+Double.toString(hasiltak);
+                    tulisfileSPL(sol);
+                }
+            }
+        }
+        
+
 }

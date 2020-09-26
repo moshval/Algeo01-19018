@@ -11,14 +11,18 @@ public class Driver {
 	public static void main(String[] args) throws Exception {
 		// Cuma buat ngetes
         double det;
+        Double t;
         Matriks M = new Matriks();
         Matriks N = new Matriks();
         Matriks O = new Matriks();
         Scanner in = new Scanner(System.in);
         //M.bacafileMatriks();
-        M.bacaMatriks();
-        M.tulisMatriks();
-        M.splCramer();
+        //M.bacaMatriks();
+        //t = M.bacafileInterpol();
+        //System.out.printf("Nilai t = %.4f\n",t);
+        //M.tulisMatriks();
+        M.cramInterpol();
+        //M.splCramer();
         //M.tulisfileMatriks();
         /*M.bacaMatriks();
         M.tulisMatriks();
