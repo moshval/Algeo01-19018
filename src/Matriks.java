@@ -291,108 +291,181 @@ public class Matriks {
     
     public Matriks echelon ()
     {
+    	int i,j,k;
     	int N = this.brs;
     	int O = this.kol;
-    	int max;
-        for (int k = 0; k < N; k++) 
-        {
-            /** find pivot row **/
-            max = k;
-            for (int i = k + 1; i < N; i++) 
-                if (Math.abs(this.M[i][k]) > Math.abs(this.M[max][k])) 
-                    max = i;
- 
-            /** swap row in M matrix **/    
-            double[] temp = this.M[k]; 
-            this.M[k] = this.M[max]; 
-            this.M[max] = temp;
- 
-            /** pivot within A and B **/
-            for (int i = k + 1; i < N; i++) 
-            {
-                double factor = this.M[i][k] / this.M[k][k];
-                for (int j = k; j < O; j++) 
-                	this.M[i][j] -= factor * this.M[k][j];
-            }
-        }
-        
-        double[] divided = new double [N];
-		for (int i=0; i < N; i++) 
+    	//double[][] M1 = new double[N+1][O+1];
+    	Matriks M1 = new Matriks ();
+    	Matriks M2 = new Matriks ();
+    	M1.brs = N+1;
+    	M1.kol = O+1;
+    	M2.brs = N;
+    	M2.kol = O;
+    	for (i = 1; i < N+1; i++) 
 		{
-			divided[i]=this.M[i][i];
-		}
-        for (int i = 0; i < N; i++)
-           {
-               for (int j = 0; j < O; j++) 
-               {
-            	   this.M[i][j]=this.M[i][j]/divided[i];
-               }   
-           }
-        
-        return (copyMatriks());
+    		for (j = 1; j < O+1; j++) 
+	        {
+    			M1.M[i][j] = this.M[i-1][j-1];
+	        }
+	    }
+    	
+    	i = 1;
+	    j = 1;
+	    while( i<=N && j<=O )
+	    {
+	    	//look for a non-zero entry in col j at or below row i
+	        k = i;
+	        while( k<=N && M1.M[k][j]==0 ) k++;
+
+	        // if such an entry is found at row k
+	        if( k<=N )
+	        {
+	        	//  if k is not i, then swap row i with row k
+	            if( k!=i ) 
+	            {
+	               swap(M1.M, i, k, j);
+	            }
+
+	            // if A[i][j] is not 1, then divide row i by A[i][j]
+	            if( M1.M[i][j]!=1 )
+	            {
+	               divide(M1.M, i, j);
+	            }
+
+	            // eliminate all other non-zero entries from col j by subtracting from each
+	            // row (other than i) an appropriate multiple of row i
+	            eliminateRE(M1.M, i, j);
+	            i++;
+	         }
+	         j++;
+	    }
+	    
+	    for ( i = 0; i < N; i++) 
+		{
+    		for ( j = 0; j < O; j++) 
+	        {
+    			M2.M[i][j] = M1.M[i+1][j+1];
+	        }
+	    }
+	    	
+	    return M2;
     }
     
     public Matriks reducedEchelon ()
     {
+    	int i,j,k;
     	int N = this.brs;
     	int O = this.kol;
-    	int max;
-        for (int k = 0; k < N; k++) 
-        {
-            /** find pivot row **/
-            max = k;
-            for (int i = k + 1; i < N; i++) 
-                if (Math.abs(this.M[i][k]) > Math.abs(this.M[max][k])) 
-                    max = i;
- 
-            /** swap row in A matrix **/    
-            double[] temp = this.M[k]; 
-            this.M[k] = this.M[max]; 
-            this.M[max] = temp;
- 
-            /** pivot within A and B **/
-            for (int i = k + 1; i < N; i++) 
-            {
-                double factor = this.M[i][k] / this.M[k][k];
-                for (int j = k; j < O; j++)
-                	this.M[i][j] -= factor * this.M[k][j];
-            }
-        }
-        
-        double[] divided = new double [N];
-		for (int i=0; i < N; i++) 
+    	//double[][] M1 = new double[N+1][O+1];
+    	Matriks M1 = new Matriks ();
+    	Matriks M2 = new Matriks ();
+    	M1.brs = N+1;
+    	M1.kol = O+1;
+    	M2.brs = N;
+    	M2.kol = O;
+    	for ( i = 1; i < N+1; i++) 
 		{
-			divided[i]=this.M[i][i];
-		}
-        for (int i = 0; i < N; i++)
-           {
-               for (int j = 0; j < O; j++) 
-               {
-            	   this.M[i][j]=this.M[i][j]/divided[i];
-               }   
-           }
-        
-        int mark=0;
-        for (int j=0; j<O; j++)
-        {
-        	if (this.M[N-1][j]==1)
-        		mark=j;
-        }
-        for (int j=mark; j>0; j=j-1)
+    		for ( j = 1; j < O+1; j++) 
+	        {
+    			M1.M[i][j] = this.M[i-1][j-1];
+	        }
+	    }
+    	
+    	i = 1;
+	    j = 1;
+	    while( i<=N && j<=O )
+	    {
+	    	//look for a non-zero entry in col j at or below row i
+	        k = i;
+	        while( k<=N && M1.M[k][j]==0 ) k++;
+
+	        // if such an entry is found at row k
+	        if( k<=N )
+	        {
+	        	//  if k is not i, then swap row i with row k
+	            if( k!=i ) 
+	            {
+	               swap(M1.M, i, k, j);
+	            }
+
+	            // if A[i][j] is not 1, then divide row i by A[i][j]
+	            if( M1.M[i][j]!=1 )
+	            {
+	               divide(M1.M, i, j);
+	            }
+
+	            // eliminate all other non-zero entries from col j by subtracting from each
+	            // row (other than i) an appropriate multiple of row i
+	            eliminateRRE(M1.M, i, j);
+	            i++;
+	         }
+	         j++;
+	    }
+	    for ( i = 0; i < N; i++) 
 		{
-			double divided1 = this.M[j][j];
-			for (int i=j-1; i>=0; i=i-1)
-			{
-				double factor = this.M[i][j]/divided1;
-				for (int l=O-1; l>i;l=l-1)
-				{
-					this.M[i][l] -= factor * this.M[j][l];
-				}
-			}
-		}
-        
-        return (copyMatriks());
+    		for ( j = 0; j < O; j++) 
+	        {
+    			M2.M[i][j] = M1.M[i+1][j+1];
+	        }
+	    }
+	    return M2;
     }
+    	
+    public void eliminateRRE (double[][] M, int i, int j)
+    {
+    	int n = M.length - 1;
+	    int m = M[0].length - 1;
+	    for(int p=1; p<=n; p++)
+	    {
+	       if( p!=i && M[p][j]!=0 )
+	       {
+	          for(int q=j+1; q<=m; q++)
+	          {
+	             M[p][q] -= M[p][j]*M[i][q];
+	          }
+	          M[p][j] = 0;
+	       }
+	    }
+    }
+    
+    public void eliminateRE (double[][] M, int i, int j)
+    {
+    	int n = M.length - 1;
+	    int m = M[0].length - 1;
+	    for(int p=i; p<=n; p++)
+	    {
+	       if( p!=i && M[p][j]!=0 )
+	       {
+	          for(int q=j+1; q<=m; q++)
+	          {
+	             M[p][q] -= M[p][j]*M[i][q];
+	          }
+	          M[p][j] = 0;
+	       }
+	    }
+    }
+    
+    public void divide (double[][] M, int i, int j)
+    {
+	    int k;  
+    	int m = M[0].length - 1;
+	    for(k=j+1; k<=m; k++)
+	    {
+	    	M[i][k] /= M[i][j];
+	    }
+	    M[i][j] = 1;
+	}
+    
+    static void swap(double[][] M, int i, int k, int j)
+    {
+	      int m = M[0].length - 1;
+	      double temp;
+	      for(int q=j; q<=m; q++){
+	         temp = M[i][q];
+	         M[i][q] = M[k][q];
+	         M[k][q] = temp;
+	      }
+	}
 
     public void splCramer() { //Solusi SPL metode Cramer
         Scanner in = new Scanner(System.in);
