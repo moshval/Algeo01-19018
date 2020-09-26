@@ -36,7 +36,8 @@ public class GaussJordan {
 	   // post: A[i][j]==1;
 	   static void divide(double[][] A, int i, int j){
 	      int m = A[0].length - 1;
-	      for(int q=j+1; q<=m; q++) A[i][q] /= A[i][j];
+	      for(int q=j+1; q<=m; q++) 
+	    	  A[i][q] /= A[i][j];
 	      A[i][j] = 1;
 	   }
 
@@ -56,6 +57,19 @@ public class GaussJordan {
 	         }
 	      }
 	   }
+	   
+	   static void eliminate1(double[][] A, int i, int j){
+		      int n = A.length - 1;
+		      int m = A[0].length - 1;
+		      for(int p=i; p<=n; p++){
+		         if( p!=i && A[p][j]!=0 ){
+		            for(int q=j+1; q<=m; q++){
+		               A[p][q] -= A[p][j]*A[i][q];
+		            }
+		            A[p][j] = 0;
+		         }
+		      }
+		   }
 
 	   // printMatrix()
 	   // print the present state of Matrix A to file out
@@ -157,7 +171,7 @@ public class GaussJordan {
 
 	            // eliminate all other non-zero entries from col j by subtracting from each
 	            // row (other than i) an appropriate multiple of row i
-	            eliminate(A, i, j);
+	            eliminate1(A, i, j);
 	            //printMatrix(out, A);
 	            printMatrix1(A);
 	            i++;
