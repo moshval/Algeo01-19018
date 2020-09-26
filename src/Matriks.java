@@ -1,6 +1,8 @@
 
 import java.io.*;
 import java.nio.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.lang.*;
 
@@ -33,12 +35,92 @@ public class Matriks {
         }
     }
 
+    public void bacafileMatriks() throws Exception{ //input matriks dari file text
+        String filename;
+        Scanner in = new Scanner(System.in);
+        System.out.print("Masukkan nama file matriks (beserta ekstensi, contoh : matriks.txt) : ");
+        filename = in.nextLine();
+        if(Files.notExists(Paths.get(filename))) {
+            System.out.println("File not found, ulangi lagi");
+            this.bacafileMatriks();}
+        else{
+        FileReader fr = (new FileReader(filename));
+        //BufferedReader br = new BufferedReader(fr);
+        int elm;
+        String mat = "";
+        
+        while((elm=fr.read()) != -1){
+            //System.out.print((char) line);
+            mat +=((char)elm);
+        }
+        mat=mat.trim();
+        //System.out.print(mat);
+        mat+='\n';
+        if (mat.length() != 0){
+            int i = 0;
+            int j = 0;
+            int l = 0;
+            String cc ="";
+            while(l<mat.length()){
+                if(mat.charAt(l) == ' ') continue;
+                while ((mat.charAt(l) != ' ' && mat.charAt(l) != '\n')){
+                    cc+=mat.charAt(l);   
+                    l++;
+                }
+                    this.M[i][j] = Double.parseDouble(cc);
+                    j++;
+                    cc= "";
+
+                    if((mat.charAt(l) == '\n')){
+                        i++;
+                        this.kol = j;
+                        j = 0;
+                     }
+                     l++;
+            }
+            this.brs = i;
+
+        } 
+
+    }
+        
+    }
+
+    public void tulisfileMatriks(){ //menuliskan matriks ke file
+        //Convert matrix ke string
+        String mf ="";
+        for (int i = 0; i < this.brs; i++) {
+            for (int j = 0; j < this.kol; j++) {
+                mf+=Double.toString(this.M[i][j]); 
+                if(j==this.kol - 1) mf+="\n";
+                else mf+=" "; }
+            
+        }
+
+        //Saving to file
+        String filename;
+        Scanner in = new Scanner(System.in);
+        System.out.print("Masukkan nama file tujuan (beserta ekstensi, contoh : matriks.txt) : ");
+        filename = in.nextLine();
+        try{
+            Formatter fw = new Formatter(filename);
+            fw.format("%s",mf);
+            fw.close();
+            System.out.println("Sukses");
+        }
+        catch(IOException e){
+            System.out.println("Error");
+            e.printStackTrace();
+        }
+
+    }
+
     public void tulisMatriks(){ //Menuliskan matriks ke layar
         int i,j;
         System.out.println("Matriks anda adalah : ");
         for ( i = 0; i < this.brs; i++) {
             for ( j = 0; j < this.kol; j++) {
-                System.out.printf("%.4f ",this.M[i][j] + 0.000);
+                System.out.printf("%.2f ",this.M[i][j] + 0.00);
             }
             System.out.println();
         }
