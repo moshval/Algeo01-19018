@@ -227,7 +227,7 @@ public class Matriks {
                     det+=dk.M[i][0] * (mnr.detKofaktor());
                 }
                 else{
-                    det+=dk.M[i][0] * (mnr.detKofaktor()) * -1;
+                    det+=dk.M[i][0] * (mnr.detKofaktor()) * -1.00;
                 }
             }
 
@@ -375,5 +375,75 @@ public class Matriks {
         return (copyMatriks());
     }
 
+    public void splCramer() { //Solusi SPL metode Cramer
+        Scanner in = new Scanner(System.in);
+        Matriks cr = new Matriks();
+        cr.brs = this.brs;
+        cr.kol = this.kol - 1;
+        for (int i = 0; i < cr.brs; i++) {
+            for (int j = 0; j < cr.kol; j++) {
+                cr.M[i][j] = this.M[i][j];
+            }
+        }
+        Double crdet = cr.detKofaktor();
+        if (crdet == 0 || (crdet.isNaN())) {
+            System.out.println("Tidak ada solusi");
+        }
+        else{
+            System.out.println("Hasil Penyelesaian : ");
+            String sol = "";
+            for (int l = 0; l < cr.kol; l++) {
+                Matriks cm = this.makeCramer(l);
+                Double detcm = cm.detKofaktor();
+                double valx = detcm / crdet + 0.00;
+                System.out.print("X"+(l+1)+" = ");
+                System.out.printf("%.2f",valx);
+                System.out.println(); 
+                sol += "X"+(l+1)+" = "+Double.toString(valx)+"\n";
+            }
+            System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+            int pil = in.nextInt();
+           while (pil!=0 && pil!=1){
+                System.out.println("Ulangi lagi");
+                System.out.println("Apakah anda mau menyimpan hasil ke file? (Y/N) : ");
+                pil = in.nextInt();
+            }
+            if(pil==1){
+                tulisfileSPL(sol);
+            }
+        }
+    }          
 
+
+    public Matriks makeCramer(int k){ //Membuat matriks kolom Cramer
+        Matriks mc = new Matriks();
+        mc.brs = this.brs;
+        mc.kol = this.kol - 1;
+        for (int i = 0; i < mc.brs; i++) {
+            for (int j = 0; j < mc.kol; j++) {
+                if(j==k) mc.M[i][j] = this.M[i][this.kol - 1];
+                else mc.M[i][j] = this.M[i][j];
+            }
+        }
+        return mc;
+    }
+
+    public void tulisfileSPL(String sol){
+        //Saving to file
+        String filename;
+        Scanner in = new Scanner(System.in);
+        System.out.print("Masukkan nama file tujuan (beserta ekstensi, contoh : matriks.txt) : ");
+        filename = in.nextLine();
+        filename = "../test/" + filename;
+        try{
+            Formatter fw = new Formatter(filename);
+            fw.format("%s",sol);
+            fw.close();
+            System.out.println("Sukses");
+        }
+        catch(IOException e){
+            System.out.println("Error");
+            e.printStackTrace();
+        }
+    }
 }

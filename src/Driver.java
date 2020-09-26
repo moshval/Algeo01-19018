@@ -15,9 +15,11 @@ public class Driver {
         Matriks N = new Matriks();
         Matriks O = new Matriks();
         Scanner in = new Scanner(System.in);
-        M.bacafileMatriks();
+        //M.bacafileMatriks();
+        M.bacaMatriks();
         M.tulisMatriks();
-        M.tulisfileMatriks();
+        M.splCramer();
+        //M.tulisfileMatriks();
         /*M.bacaMatriks();
         M.tulisMatriks();
         /*
