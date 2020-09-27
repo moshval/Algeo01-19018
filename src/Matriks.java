@@ -466,6 +466,93 @@ public class Matriks {
 	         M[k][q] = temp;
 	      }
 	}
+    
+    public void splGaussJordan (Matriks M) 
+    {
+    	M=M.reducedEchelon();
+    	int mark = 0;
+    	double sum; 
+    	int i,j;
+    	int N = this.brs;
+    	int O = this.kol;
+    	     
+        // flag == 1 berarti ada solusi unik
+        // flag == 2 berarti solusi parametrik
+        // flag == 3 berarti tidak mempunyai solusi
+
+        if (N == O-1) {
+        	mark = 1;
+        }
+        for (i = 0; i < N; i++)  
+        { 
+            sum = 0; 
+            for (j = 0; j < O-2; j++)      
+                sum = sum + this.M[i][j]; 
+            if (sum == 0 && this.M[i][O-1]==0)  
+            	mark = 2;
+            else if (sum != 0 && this.M[i][O-1]==0)
+            	mark = 3;
+        }
+    	
+    	if (mark == 2)      
+    	    System.out.println("Solusi dalam bentuk parametrik");  
+    	else if (mark == 3)      
+    	    System.out.println("Solusi tidak ada"); 
+    	else 
+    	{ 
+    		for (i = 0; i < N; i++)          
+    			System.out.print(this.M[i][N] +" "); 
+    		System.out.println(" "); 
+    	} 
+    	
+    }
+    
+    public void splGauss (Matriks M) 
+    {
+    	M=M.echelon();
+    	double sum; 
+    	int i,j;
+    	int N = this.brs;
+    	int O = this.kol;
+    	int mark = 0;
+        
+        // mark == 1 berarti ada solusi unik
+        // mark == 2 berarti solusi parametrik
+        // mark == 3 berarti tidak mempunyai solusi
+
+        if (N == O-1) {
+        	mark = 1;
+        }
+        for (i = 0; i < N; i++)  
+        { 
+            sum = 0; 
+            for (j = 0; j < O-2; j++)      
+                sum = sum + this.M[i][j]; 
+            if (sum == 0 && this.M[i][O-1]==0)  
+            	mark = 2;
+            else if (sum != 0 && this.M[i][O-1]==0)
+            	mark = 3;
+        }
+    	
+    	if (mark == 2)      
+    	    System.out.println("Solusi dalam bentuk parametrik");  
+    	else if (mark == 3)      
+    	    System.out.println("Solusi tidak ada"); 
+    	else 
+    	{ 
+    		double[] tabSolusi = new double[N];
+            for (i = N - 1; i >= 0; i--) 
+            {
+                sum = 0.0;
+                for (j = i + 1; j < O-1; j++) 
+                    sum += this.M[i][j] * tabSolusi[j];
+                tabSolusi[i] = (this.M[i][O-1] - sum) / this.M[i][i];
+            }         
+            for (i = 0; i < N; i++) 
+                System.out.printf("%.2f ", tabSolusi[i]);
+            System.out.println(" "); 
+    	} 	
+    }
 
     public void splCramer() { //Solusi SPL metode Cramer
         Scanner in = new Scanner(System.in);
