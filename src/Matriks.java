@@ -255,7 +255,7 @@ public class Matriks {
           
     }
     
-    public Matriks makeInverse(){ // Membuat invers suatu matriks , metode adjoin
+    public Matriks makeInverse(){ // Membuat invers suatu matriks , metode adjoin , berlaku untuk matriks persegi
         Matriks inv = this.makeAdjoint();
         if(this.detKofaktor() != 0){
             double perdet = this.detKofaktor();
@@ -618,8 +618,8 @@ public class Matriks {
         }
         return xtak;
     }
-        public void cramInterpol() throws Exception{ //Interpolasi with kofaktor, asumsi untuk setiap derajat n terdapat tepat n+1 buah titik
-            // sehingga metode cramer valid
+        public void cramInterpol() throws Exception{ //Interpolasi with kofaktor, asumsi untuk setiap derajat n terdapat tepat n+1 buah titik unik
+            // sehingga metode cramer valid , namun tidak berlaku untuk titik yang mengandung x = 0
             Scanner in = new Scanner(System.in);
             System.out.print("Baca dari keyboard(0) atau file(1) ? Input anda : ");
             Double xtak = 0.0000;
@@ -655,9 +655,16 @@ public class Matriks {
                     System.out.printf("%.4f",valx);
                     hasiltak += valx * Math.pow(xtak,l);
                     System.out.println();
-                    if(pang==this.brs-1 && pang!=0) sol+="("+Double.toString(valx)+"x^"+pang+")"; 
-                    else if(pang!=this.brs - 1 && pang!=0) sol += "("+Double.toString(valx)+"x^"+pang+") + ";
-                    else sol+="("+Double.toString(valx)+")"+" + ";
+                    if(valx > 0.0000){
+                        if(pang==this.brs-1 && pang!=0) sol+=" + "+Double.toString(valx)+"x^"+pang; 
+                        else if(pang!=this.brs - 1 && pang!=0) sol += " + "+Double.toString(valx)+"x^"+pang;
+                        else sol+=Double.toString(valx); 
+                    }
+                    else{
+                        if(pang==this.brs-1 && pang!=0) sol+=" "+Double.toString(valx)+"x^"+pang; 
+                        else if(pang!=this.brs - 1 && pang!=0) sol += " "+Double.toString(valx)+"x^"+pang;
+                        else sol+=Double.toString(valx); 
+                    }
                     pang++;
                 }
 
@@ -674,11 +681,10 @@ public class Matriks {
                     pil = in.nextInt();
                 }
                 if(pil==1){
-                    sol+="\n" + "Taksiran pada x = "+Double.toString(xtak)+" adalah "+Double.toString(hasiltak);
+                    sol+="\n" + "Taksiran polinom di atas pada x = "+Double.toString(xtak)+" adalah "+Double.toString(hasiltak);
                     tulisfileSPL(sol);
                 }
             }
         }
-        
 
 }
