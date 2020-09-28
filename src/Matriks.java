@@ -466,6 +466,93 @@ public class Matriks {
 	         M[k][q] = temp;
 	      }
 	}
+    
+    public void splGaussJordan (Matriks M) 
+    {
+    	M=M.reducedEchelon();
+    	int mark = 0;
+    	double sum; 
+    	int i,j;
+    	int N = this.brs;
+    	int O = this.kol;
+    	     
+        // flag == 1 berarti ada solusi unik
+        // flag == 2 berarti solusi parametrik
+        // flag == 3 berarti tidak mempunyai solusi
+
+        if (N == O-1) {
+        	mark = 1;
+        }
+        for (i = 0; i < N; i++)  
+        { 
+            sum = 0; 
+            for (j = 0; j < O-2; j++)      
+                sum = sum + this.M[i][j]; 
+            if (sum == 0 && this.M[i][O-1]==0)  
+            	mark = 2;
+            else if (sum != 0 && this.M[i][O-1]==0)
+            	mark = 3;
+        }
+    	
+    	if (mark == 2)      
+    	    System.out.println("Solusi dalam bentuk parametrik");  
+    	else if (mark == 3)      
+    	    System.out.println("Solusi tidak ada"); 
+    	else 
+    	{ 
+    		for (i = 0; i < N; i++)          
+    			System.out.print(this.M[i][N] +" "); 
+    		System.out.println(" "); 
+    	} 
+    	
+    }
+    
+    public void splGauss (Matriks M) 
+    {
+    	M=M.echelon();
+    	double sum; 
+    	int i,j;
+    	int N = this.brs;
+    	int O = this.kol;
+    	int mark = 0;
+        
+        // mark == 1 berarti ada solusi unik
+        // mark == 2 berarti solusi parametrik
+        // mark == 3 berarti tidak mempunyai solusi
+
+        if (N == O-1) {
+        	mark = 1;
+        }
+        for (i = 0; i < N; i++)  
+        { 
+            sum = 0; 
+            for (j = 0; j < O-2; j++)      
+                sum = sum + this.M[i][j]; 
+            if (sum == 0 && this.M[i][O-1]==0)  
+            	mark = 2;
+            else if (sum != 0 && this.M[i][O-1]==0)
+            	mark = 3;
+        }
+    	
+    	if (mark == 2)      
+    	    System.out.println("Solusi dalam bentuk parametrik");  
+    	else if (mark == 3)      
+    	    System.out.println("Solusi tidak ada"); 
+    	else 
+    	{ 
+    		double[] tabSolusi = new double[N];
+            for (i = N - 1; i >= 0; i--) 
+            {
+                sum = 0.0;
+                for (j = i + 1; j < O-1; j++) 
+                    sum += this.M[i][j] * tabSolusi[j];
+                tabSolusi[i] = (this.M[i][O-1] - sum) / this.M[i][i];
+            }         
+            for (i = 0; i < N; i++) 
+                System.out.printf("%.2f ", tabSolusi[i]);
+            System.out.println(" "); 
+    	} 	
+    }
 
     public void splCramer() { //Solusi SPL metode Cramer
         Scanner in = new Scanner(System.in);
@@ -686,5 +773,139 @@ public class Matriks {
                 }
             }
         }
+<<<<<<< HEAD
+=======
+
+    public Matriks seperate_main_Augmented(){ // Memisahkan augmented matriks
+        Matriks main = new Matriks();
+        int i,j;
+        main.brs = this.brs;
+        main.kol = this.kol - 1;
+
+        for (i = 0; i < main.brs; i++) {
+            for (j = 0; j < main.kol; j++) {
+                main.M[i][j] = this.M[i][j];
+            }
+        }
+        return main;
+    }
+
+    public Matriks seperate_minor_Augmented(){ // Memisahkan augmented matriks
+        Matriks minor = new Matriks();
+        int i,j;
+        minor.brs = this.brs;
+        minor.kol = 1;
+
+        for (i = 0; i < minor.brs; i++) {
+            minor.M[i][0] = this.M[i][(this.kol)-1];
+        }
+        return minor;
+    }
+
+    public double kaliKol(int j1, int j2){ // Mengalikan elemen kolom j1 dengan elemen kolom j2 untuk semua baris
+        int i;
+        double count = 0;
+        for(i = 0; i < this.brs;i++){
+            count += (this.M[i][j1])*(this.M[i][j2]);
+        }
+        return(count);
+    }
+    public double jumKol(int j){ // Menjumlahkan elemen pada kolom j
+        int i;
+        double count = 0;
+        for(i = 0; i < this.brs;i++){
+            count += (this.M[i][j]);
+        }
+        return(count);
+    }
+
+    public Matriks multiple(Matriks M1, Matriks M2){ // Mengalikan dua buah matriks
+        int i,j,k;
+        Matriks M3 = new Matriks();
+        M3.brs = M1.brs;
+        M3.kol = M2.kol;
+
+        for(i=0; i < M3.brs;i++){
+            for(j=0; j < M3.kol ;j++){
+                M3.M[i][j] = 0;
+                for(k=0; k < M1.kol; k++){
+                    M3.M[i][j] += (M1.M[i][k])*(M2.M[k][j]);
+                }
+            }
+        }
+        return M3;
+    }
+
+    public Matriks Matriks_SPLInv(){ // Membentuk matriks solusi SPL dengan metode invers
+
+        Matriks A = new Matriks();
+        Matriks B = new Matriks();
+        Matriks K = new Matriks();
+
+        A = this.seperate_main_Augmented();
+        B = this.seperate_minor_Augmented();
+        K = A.makeInverse();
+        K.tulisMatriks();
+
+        return multiple(K,B);
+    }
+
+    public Matriks Main_regresi(){ // Membentuk matriks utama regresi
+        Matriks main_reg = new Matriks();
+        main_reg.brs = this.kol;
+        main_reg.kol = this.kol;
+
+        int i,j;
+
+        for (i = 0; i < main_reg.brs; i++) {
+            for (j = 0; j < main_reg.kol; j++) {
+                main_reg.M[0][0] = this.brs;
+                if (j == 0){
+                    if (i > 0) {
+                        main_reg.M[i][j] = this.jumKol((i-1));
+                    }
+                }else if (i == 0) {
+                    if (j >0) {
+                        main_reg.M[i][j] = this.jumKol((j-1));
+                    }
+                }else if(i != 0 && j != 0){
+                    main_reg.M[i][j] = this.kaliKol((i-1),(j-1));
+                }
+
+            }
+        }
+        return main_reg;
+    }
+
+    public Matriks Minor_regresi(){ // Membentuk matriks regresi bagian hasil
+        Matriks minor_reg = new Matriks();
+        minor_reg.brs = this.kol;
+        minor_reg.kol = 1;
+
+        int i;
+
+        for (i = 0; i < minor_reg.brs; i++) {
+            minor_reg.M[0][0] = this.jumKol(((this.kol)-1));
+            if (i > 0){
+                minor_reg.M[i][0] = this.kaliKol((i-1),((this.kol)-1));
+            }
+        }
+        return minor_reg;
+
+    }
+    public Matriks Result_regresi(){ // Membentuk matriks solusi koefisien regresi
+        Matriks A = new Matriks();
+        Matriks B = new Matriks();
+        Matriks K = new Matriks();
+
+        A = this.Main_regresi();
+        B = this.Minor_regresi();
+        K = A.makeInverse();
+        K.tulisMatriks();
+
+        return multiple(K,B);
+    }
+        
+>>>>>>> e9bf3e0abc300bcd2b99bc3a0a6e589f7f75c970
 
 }
