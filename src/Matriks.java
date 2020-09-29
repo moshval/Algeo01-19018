@@ -832,9 +832,9 @@ public class Matriks {
             }
             return M3;
         }
-    
+
         public Matriks Matriks_SPLInv(){ // Membentuk matriks solusi SPL dengan metode invers
-    
+
             Matriks A = new Matriks();
             Matriks B = new Matriks();
             Matriks K = new Matriks();
@@ -843,64 +843,105 @@ public class Matriks {
             B = this.seperate_minor_Augmented();
             K = A.makeInverse();
             K.tulisMatriks();
-    
-            return multiple(K,B);
-        }
-    
-        public Matriks Main_regresi(){ // Membentuk matriks utama regresi
-            Matriks main_reg = new Matriks();
-            main_reg.brs = this.kol;
-            main_reg.kol = this.kol;
-    
-            int i,j;
-    
-            for (i = 0; i < main_reg.brs; i++) {
-                for (j = 0; j < main_reg.kol; j++) {
-                    main_reg.M[0][0] = this.brs;
-                    if (j == 0){
-                        if (i > 0) {
-                            main_reg.M[i][j] = this.jumKol((i-1));
-                        }
-                    }else if (i == 0) {
-                        if (j >0) {
-                            main_reg.M[i][j] = this.jumKol((j-1));
-                        }
-                    }else if(i != 0 && j != 0){
-                        main_reg.M[i][j] = this.kaliKol((i-1),(j-1));
-                    }
-    
-                }
-            }
-            return main_reg;
-        }
-    
-        public Matriks Minor_regresi(){ // Membentuk matriks regresi bagian hasil
-            Matriks minor_reg = new Matriks();
-            minor_reg.brs = this.kol;
-            minor_reg.kol = 1;
-    
-            int i;
-    
-            for (i = 0; i < minor_reg.brs; i++) {
-                minor_reg.M[0][0] = this.jumKol(((this.kol)-1));
-                if (i > 0){
-                    minor_reg.M[i][0] = this.kaliKol((i-1),((this.kol)-1));
-                }
-            }
-            return minor_reg;
-    
-        }
-        public Matriks Result_regresi(){ // Membentuk matriks solusi koefisien regresi
-            Matriks A = new Matriks();
-            Matriks B = new Matriks();
-            Matriks K = new Matriks();
-    
-            A = this.Main_regresi();
-            B = this.Minor_regresi();
-            K = A.makeInverse();
-            K.tulisMatriks();
-    
+
             return multiple(K,B);
         }
 
+        public Matriks Matriks_regresi(){ // Membentuk matriks regresi
+            Matriks reg = new Matriks();
+            reg.brs = this.kol;
+            reg.kol = (this.kol) + 1;
+
+            int i,j;
+            // Mengisi matriks utama regresi
+            for (i = 0; i < reg.brs; i++) {
+                for (j = 0; j < reg.kol; j++) {
+                    reg.M[0][0] = this.brs;
+                    if (j == 0){
+                        if (i > 0) {
+                            reg.M[i][j] = this.jumKol((i-1));
+                        }
+                    }else if (i == 0) {
+                        if (j >0) {
+                            reg.M[i][j] = this.jumKol((j-1));
+                        }
+                    }else if(i != 0 && j != 0){
+                        reg.M[i][j] = this.kaliKol((i-1),(j-1));
+                    }
+
+                }
+            }
+            // Mengisi sisanya yaitu kolom terakhir
+            for (i = 0; i < reg.brs; i++) {
+                reg.M[0][reg.kol] = this.jumKol(((this.kol)-1));
+                if (i > 0){
+                    reg.M[i][reg.kol] = this.kaliKol((i-1),((this.kol)-1));
+                }
+            }
+            return reg;
+        }
+
+        public Matriks Result_regresi_inv(){ // Membentuk matriks solusi koefisien regresi
+            Matriks A = new Matriks();
+            Matriks B = new Matriks();
+            Matriks C = new Matriks();
+            Matriks K = new Matriks();
+
+            A = this.Matriks_regresi();
+            B = A.seperate_main_Augmented();
+            C = A.seperate_minor_Augmented();
+            K = B.makeInverse();
+
+            return multiple(K,C);
+        }
+
+        public Matriks Result_regresi_gauss(){ // Membentuk matriks eselon dari matriks regresi
+            Matriks A = new Matriks();
+            Matriks B = new Matriks();
+
+            A = this.Matriks_regresi();
+            B = A.echelon();
+
+            return B;
+        }
+
+        public double Compute_regresi_inv(){
+            Matriks M = new Matriks();
+            int N;
+            int i,j;
+            Matriks x = new Matriks();
+            x.brs = 1;
+            x.kol = (this.kol); // elemen x[0][0] diisi 1 setelah indeks tersebut baru input parameter x nya
+
+            Scanner in = new Scanner(System.in);
+            N = in.nextInt();
+            M.brs = 20;
+            M.kol = N+1;
+
+            for (i = 0; i < M.brs; i++) {
+                for (j = 0; j < M.kol; j++) {
+                    M.M[i][j] = in.nextDouble();
+                }
+            }
+
+            Matriks koef_b = M.Result_regresi_inv();
+
+            for (i = 0; i < x.brs; i++) {
+                for (j = 1; j < x.kol; j++) {
+                    x.M[0][0] = 1;
+                    if (j > 0) {
+                        x.M[i][j] = in.nextDouble();
+                    }
+                }
+            }
+
+            double count = 0;
+            for(i = 0; i < x.brs ; i++){
+                for(j = 0; j < x.kol ; j++){
+                    count += (x.M[i][j])*(koef_b.M[j][i]);
+                }
+            }
+
+            return count;
+        }
 }
