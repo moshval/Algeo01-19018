@@ -926,13 +926,9 @@ public class Matriks {
 
             Matriks koef_b = M.Result_regresi_inv();
 
-            for (i = 0; i < x.brs; i++) {
-                for (j = 1; j < x.kol; j++) {
-                    x.M[0][0] = 1;
-                    if (j > 0) {
-                        x.M[i][j] = in.nextDouble();
-                    }
-                }
+            x.M[0][0] = 1;
+            for (j = 1; j < x.kol; j++) {
+                x.M[0][j] = in.nextDouble();
             }
 
             double count = 0;
@@ -944,4 +940,56 @@ public class Matriks {
 
             return count;
         }
+
+        public boolean Is_identity(Matriks M){
+            int i,j;
+            boolean Identity = (M.brs == M.kol);
+            if (Identity) {
+                for (i = 0; i < M.brs; i++) {
+                    for (j = 0; j < M.kol; j++) {
+                        Identity = Identity && ((i != j) ? (M.M[i][j] == 0) : (M.M[i][j] == 1) );
+                    }
+                }
+            }
+            return Identity;
+        }
+
+        public Matriks Merged_Identity(){
+            int i,j;
+            Matriks Merged = new Matriks();
+            Merged.brs = this.brs;
+            Merged.kol = 2*(this.kol);
+
+            // Mengcopy matriks
+            for (i = 0; i < Merged.brs; i++) {
+                for (j = 0; j < this.kol; j++) {
+                    Merged.M[i][j] = this.M[i][j];
+                }
+            }
+
+            // Menggabungkan dengan matriks identitas
+
+            for (i = 0; i < Merged.brs; i++) {
+                for (j = this.kol; j < Merged.kol; j++) {
+                    if ((j-i) == this.kol){
+                        Merged.M[i][j] = 1;
+                    }
+                    else{
+                        Merged.M[i][j] = 0;
+                    }
+                }
+            }
+
+            return Merged;
+        }
+
+        public Matriks Invers_gauss(){
+            int i,j;
+            Matriks M = this.copyMatriks();
+
+            while (!(Is_identity(M))){
+
+            }
+        }
+
 }
