@@ -984,12 +984,21 @@ public class Matriks {
         }
 
         public Matriks Invers_gauss(){
-            int i,j;
-            Matriks M = this.copyMatriks();
-
-            while (!(Is_identity(M))){
-
-            }
+        	int i,j;
+        	int N = this.brs;
+        	int O = this.kol;
+        	Matriks M1 = new Matriks ();
+        	M1.brs = N;
+        	M1.kol = O/2;
+        	
+        	for ( i = 0; i < N; i++) 
+    		{
+        		for ( j = 0; j < O/2; j++) 
+    	        {
+        			M1.M[i][j] = this.M[i][j+(O/2)];
+    	        }
+    	    }
+    	    return M1;
         }
 
 }
