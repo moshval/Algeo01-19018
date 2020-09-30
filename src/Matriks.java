@@ -1067,9 +1067,9 @@ public class Matriks {
             }
             return M3;
         }
-    
+
         public Matriks Matriks_SPLInv(){ // Membentuk matriks solusi SPL dengan metode invers
-    
+
             Matriks A = new Matriks();
             Matriks B = new Matriks();
             Matriks K = new Matriks();
@@ -1078,64 +1078,162 @@ public class Matriks {
             B = this.seperate_minor_Augmented();
             K = A.makeInverse();
             K.tulisMatriks();
-    
+
             return multiple(K,B);
         }
-    
-        public Matriks Main_regresi(){ // Membentuk matriks utama regresi
-            Matriks main_reg = new Matriks();
-            main_reg.brs = this.kol;
-            main_reg.kol = this.kol;
-    
+
+        public Matriks Matriks_regresi(){ // Membentuk matriks regresi
+            Matriks reg = new Matriks();
+            reg.brs = this.kol;
+            reg.kol = (this.kol) + 1;
+
             int i,j;
-    
-            for (i = 0; i < main_reg.brs; i++) {
-                for (j = 0; j < main_reg.kol; j++) {
-                    main_reg.M[0][0] = this.brs;
+            // Mengisi matriks utama regresi
+            for (i = 0; i < reg.brs; i++) {
+                for (j = 0; j < reg.kol; j++) {
+                    reg.M[0][0] = this.brs;
                     if (j == 0){
                         if (i > 0) {
-                            main_reg.M[i][j] = this.jumKol((i-1));
+                            reg.M[i][j] = this.jumKol((i-1));
                         }
                     }else if (i == 0) {
                         if (j >0) {
-                            main_reg.M[i][j] = this.jumKol((j-1));
+                            reg.M[i][j] = this.jumKol((j-1));
                         }
                     }else if(i != 0 && j != 0){
-                        main_reg.M[i][j] = this.kaliKol((i-1),(j-1));
+                        reg.M[i][j] = this.kaliKol((i-1),(j-1));
                     }
-    
+
                 }
             }
-            return main_reg;
-        }
-    
-        public Matriks Minor_regresi(){ // Membentuk matriks regresi bagian hasil
-            Matriks minor_reg = new Matriks();
-            minor_reg.brs = this.kol;
-            minor_reg.kol = 1;
-    
-            int i;
-    
-            for (i = 0; i < minor_reg.brs; i++) {
-                minor_reg.M[0][0] = this.jumKol(((this.kol)-1));
+            // Mengisi sisanya yaitu kolom terakhir
+            for (i = 0; i < reg.brs; i++) {
+                reg.M[0][reg.kol] = this.jumKol(((this.kol)-1));
                 if (i > 0){
-                    minor_reg.M[i][0] = this.kaliKol((i-1),((this.kol)-1));
+                    reg.M[i][reg.kol] = this.kaliKol((i-1),((this.kol)-1));
                 }
             }
-            return minor_reg;
-    
+            return reg;
         }
-        public Matriks Result_regresi(){ // Membentuk matriks solusi koefisien regresi
+
+        public Matriks Result_regresi_inv(){ // Membentuk matriks solusi koefisien regresi
             Matriks A = new Matriks();
             Matriks B = new Matriks();
+            Matriks C = new Matriks();
             Matriks K = new Matriks();
-    
-            A = this.Main_regresi();
-            B = this.Minor_regresi();
-            K = A.makeInverse();
-            K.tulisMatriks();
-    
-            return multiple(K,B);
+
+            A = this.Matriks_regresi();
+            B = A.seperate_main_Augmented();
+            C = A.seperate_minor_Augmented();
+            K = B.makeInverse();
+
+            return multiple(K,C);
+        }
+
+        public Matriks Result_regresi_gauss(){ // Membentuk matriks eselon dari matriks regresi
+            Matriks A = new Matriks();
+            Matriks B = new Matriks();
+
+            A = this.Matriks_regresi();
+            B = A.echelon();
+
+            return B;
+        }
+
+        public double Compute_regresi_inv(){
+            Matriks M = new Matriks();
+            int N;
+            int i,j;
+            Matriks x = new Matriks();
+            x.brs = 1;
+            x.kol = (this.kol); // elemen x[0][0] diisi 1 setelah indeks tersebut baru input parameter x nya
+
+            Scanner in = new Scanner(System.in);
+            N = in.nextInt();
+            M.brs = 20;
+            M.kol = N+1;
+
+            for (i = 0; i < M.brs; i++) {
+                for (j = 0; j < M.kol; j++) {
+                    M.M[i][j] = in.nextDouble();
+                }
+            }
+
+            Matriks koef_b = M.Result_regresi_inv();
+
+            x.M[0][0] = 1;
+            for (j = 1; j < x.kol; j++) {
+                x.M[0][j] = in.nextDouble();
+            }
+
+            double count = 0;
+            for(i = 0; i < x.brs ; i++){
+                for(j = 0; j < x.kol ; j++){
+                    count += (x.M[i][j])*(koef_b.M[j][i]);
+                }
+            }
+
+            return count;
+        }
+
+        public boolean Is_identity(Matriks M){
+            int i,j;
+            boolean Identity = (M.brs == M.kol);
+            if (Identity) {
+                for (i = 0; i < M.brs; i++) {
+                    for (j = 0; j < M.kol; j++) {
+                        Identity = Identity && ((i != j) ? (M.M[i][j] == 0) : (M.M[i][j] == 1) );
+                    }
+                }
+            }
+            return Identity;
+        }
+
+        public Matriks Merged_Identity(){
+            int i,j;
+            Matriks Merged = new Matriks();
+            Merged.brs = this.brs;
+            Merged.kol = 2*(this.kol);
+
+            // Mengcopy matriks
+            for (i = 0; i < Merged.brs; i++) {
+                for (j = 0; j < this.kol; j++) {
+                    Merged.M[i][j] = this.M[i][j];
+                }
+            }
+
+            // Menggabungkan dengan matriks identitas
+
+            for (i = 0; i < Merged.brs; i++) {
+                for (j = this.kol; j < Merged.kol; j++) {
+                    if ((j-i) == this.kol){
+                        Merged.M[i][j] = 1;
+                    }
+                    else{
+                        Merged.M[i][j] = 0;
+                    }
+                }
+            }
+
+            return Merged;
+        }
+
+        public Matriks Invers_gauss(){
+        	int i,j;
+        	int N = this.brs;
+        	int O = this.kol;
+        	Matriks M1 = new Matriks ();
+        	M1.brs = N;
+        	M1.kol = O/2;
+        	
+        	for ( i = 0; i < N; i++) 
+    		{
+        		for ( j = 0; j < O/2; j++) 
+    	        {
+        			M1.M[i][j] = this.M[i][j+(O/2)];
+    	        }
+    	    }
+    	    return M1;
         }
 
 }
