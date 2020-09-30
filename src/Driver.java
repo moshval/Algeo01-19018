@@ -16,9 +16,9 @@ public class Driver {
         Matriks N = new Matriks();
         Matriks O = new Matriks();
         Scanner in = new Scanner(System.in);
-        M.bacaMatriks();
-        N = M.makeInverse();
-        N.tulisMatriks();
+        M.gjInterpol();
+        //M.bacaMatriks();
+        //System.out.printf("%.4f",M.detGJ());
        // N.bacaMatriks();
         //O = O.kaliMatriks(M,N);
        //O.tulisMatriks();

@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.nio.*;
 import java.nio.file.Files;
@@ -119,7 +118,7 @@ public class Matriks {
 
     public void tulisMatriks(){ //Menuliskan matriks ke layar
         int i,j;
-        System.out.println("Matriks anda adalah : ");
+        //System.out.println("Matriks anda adalah : ");
         for ( i = 0; i < this.brs; i++) {
             for ( j = 0; j < this.kol; j++) {
                 System.out.printf("%.4f ",this.M[i][j] + 0.0000);
@@ -255,13 +254,58 @@ public class Matriks {
           
     }
     
+    public Double detGJ(){ //Determinan menggunakan eliminasi Gauss
+        Double det = 0.0000;
+        Matriks dgj = this.copyMatriks();
+        if(dgj.brs==1){
+            det = dgj.M[0][0];}
+        else{
+            det = 1.0000;
+            for (int i = 0; i < dgj.brs; i++) {
+                int k = i;
+                for (int j = i+1; j < dgj.kol; j++) {
+                    if(Math.abs(dgj.M[j][i])>Math.abs(dgj.M[k][i])){
+                        k = j;
+                    }
+                }
+                if(dgj.M[k][i]==0.0000){
+                    det = 0.0000;
+                    break;
+                }
+
+                dgj.swapBrs(dgj, i, k);
+                if(i!=k) det*= -1.0000;
+                det*= dgj.M[i][i];
+                for (int l = i+1; l < dgj.brs; l++) {
+                    dgj.M[i][l] = dgj.M[i][l] / dgj.M[i][i];
+                }
+                for (int m = 0; m < dgj.brs;m++) {
+                    if(m!=i){
+                        for (int n = i+1; n < dgj.brs; n++) {
+                            dgj.M[m][n] = dgj.M[m][n] - dgj.M[i][n]*dgj.M[m][i];
+                        }
+                    }
+                }
+                
+            }
+
+        }
+
+        return det;
+        
+
+    }
+    
     public Matriks makeInverse(){ // Membuat invers suatu matriks , metode adjoin , berlaku untuk matriks persegi
         Matriks inv = this.makeAdjoint();
         if(this.detKofaktor() != 0){
-            double perdet = this.detKofaktor();
-            for (int i = 0; i < inv.brs; i++) {
-                for (int j = 0; j < inv.kol; j++) {
-                    inv.M[i][j] =  inv.M[i][j] / perdet;
+            if(this.brs == 1 && this.kol ==1 && this.M[0][0] != 0) inv.M[0][0] = 1/this.M[0][0];
+            else{
+                double perdet = this.detKofaktor();
+                for (int i = 0; i < inv.brs; i++) {
+                    for (int j = 0; j < inv.kol; j++) {
+                        inv.M[i][j] =  inv.M[i][j] / perdet;
+                    }
                 }
             }
         }
@@ -313,27 +357,20 @@ public class Matriks {
 	    j = 1;
 	    while( i<=N && j<=O )
 	    {
-	    	//look for a non-zero entry in col j at or below row i
-	        k = i;
+            k = i;
 	        while( k<=N && M1.M[k][j]==0 ) k++;
 
-	        // if such an entry is found at row k
 	        if( k<=N )
 	        {
-	        	//  if k is not i, then swap row i with row k
 	            if( k!=i ) 
 	            {
 	               swap(M1.M, i, k, j);
 	            }
 
-	            // if A[i][j] is not 1, then divide row i by A[i][j]
 	            if( M1.M[i][j]!=1 )
 	            {
 	               divide(M1.M, i, j);
 	            }
-
-	            // eliminate all other non-zero entries from col j by subtracting from each
-	            // row (other than i) an appropriate multiple of row i
 	            eliminateRE(M1.M, i, j);
 	            i++;
 	         }
@@ -356,7 +393,6 @@ public class Matriks {
     	int i,j,k;
     	int N = this.brs;
     	int O = this.kol;
-    	//double[][] M1 = new double[N+1][O+1];
     	Matriks M1 = new Matriks ();
     	Matriks M2 = new Matriks ();
     	M1.brs = N+1;
@@ -375,27 +411,19 @@ public class Matriks {
 	    j = 1;
 	    while( i<=N && j<=O )
 	    {
-	    	//look for a non-zero entry in col j at or below row i
 	        k = i;
 	        while( k<=N && M1.M[k][j]==0 ) k++;
-
-	        // if such an entry is found at row k
 	        if( k<=N )
 	        {
-	        	//  if k is not i, then swap row i with row k
 	            if( k!=i ) 
 	            {
 	               swap(M1.M, i, k, j);
 	            }
 
-	            // if A[i][j] is not 1, then divide row i by A[i][j]
 	            if( M1.M[i][j]!=1 )
 	            {
 	               divide(M1.M, i, j);
 	            }
-
-	            // eliminate all other non-zero entries from col j by subtracting from each
-	            // row (other than i) an appropriate multiple of row i
 	            eliminateRRE(M1.M, i, j);
 	            i++;
 	         }
@@ -469,12 +497,15 @@ public class Matriks {
     
     public void splGaussJordan (Matriks M) 
     {
-    	M=M.reducedEchelon();
+        M=M.reducedEchelon();
+        System.out.println("Matriks hasil eliminasi Gauss-Jordan : ");
+        M.tulisMatriks();
+        System.out.println();
     	int mark = 0;
     	double sum; 
     	int i,j;
-    	int N = this.brs;
-    	int O = this.kol;
+    	int N = M.brs;
+    	int O = M.kol;
     	     
         // flag == 1 berarti ada solusi unik
         // flag == 2 berarti solusi parametrik
@@ -485,12 +516,12 @@ public class Matriks {
         }
         for (i = 0; i < N; i++)  
         { 
-            sum = 0; 
+            sum = 0.0000; 
             for (j = 0; j < O-2; j++)      
-                sum = sum + this.M[i][j]; 
-            if (sum == 0 && this.M[i][O-1]==0)  
+                sum = sum + M.M[i][j]; 
+            if (sum == 0.0000 && M.M[i][O-1]==0)  
             	mark = 2;
-            else if (sum != 0 && this.M[i][O-1]==0)
+            else if (sum != 0.0000 && M.M[i][O-1]==0)
             	mark = 3;
         }
     	
@@ -500,8 +531,9 @@ public class Matriks {
     	    System.out.println("Solusi tidak ada"); 
     	else 
     	{ 
+            System.out.println("Solusi SPL Matriks anda : ");
     		for (i = 0; i < N; i++)          
-    			System.out.print(this.M[i][N] +" "); 
+    			System.out.printf("%.4f ",M.M[i][O-1]); 
     		System.out.println(" "); 
     	} 
     	
@@ -509,11 +541,14 @@ public class Matriks {
     
     public void splGauss (Matriks M) 
     {
-    	M=M.echelon();
+        M=M.echelon();
+        System.out.println("Matriks hasil eliminasi Gauss : ");
+        M.tulisMatriks();
+        System.out.println();
     	double sum; 
     	int i,j;
-    	int N = this.brs;
-    	int O = this.kol;
+    	int N = M.brs;
+    	int O = M.kol;
     	int mark = 0;
         
         // mark == 1 berarti ada solusi unik
@@ -525,12 +560,12 @@ public class Matriks {
         }
         for (i = 0; i < N; i++)  
         { 
-            sum = 0; 
+            sum = 0.0000; 
             for (j = 0; j < O-2; j++)      
-                sum = sum + this.M[i][j]; 
-            if (sum == 0 && this.M[i][O-1]==0)  
+                sum = sum + M.M[i][j]; 
+            if (sum == 0.0000 && M.M[i][O-1]==0)  
             	mark = 2;
-            else if (sum != 0 && this.M[i][O-1]==0)
+            else if (sum != 0.0000 && M.M[i][O-1]==0)
             	mark = 3;
         }
     	
@@ -540,19 +575,130 @@ public class Matriks {
     	    System.out.println("Solusi tidak ada"); 
     	else 
     	{ 
+            System.out.println("Solusi SPL Matriks anda : ");
     		double[] tabSolusi = new double[N];
             for (i = N - 1; i >= 0; i--) 
             {
-                sum = 0.0;
+                sum = 0.0000;
                 for (j = i + 1; j < O-1; j++) 
-                    sum += this.M[i][j] * tabSolusi[j];
-                tabSolusi[i] = (this.M[i][O-1] - sum) / this.M[i][i];
+                    sum += M.M[i][j] * tabSolusi[j];
+                tabSolusi[i] = (M.M[i][O-1] - sum) / M.M[i][i];
             }         
             for (i = 0; i < N; i++) 
-                System.out.printf("%.2f ", tabSolusi[i]);
+                System.out.printf("%.4f ", tabSolusi[i]);
             System.out.println(" "); 
     	} 	
     }
+    public int idxPivot(int baris){ // Mereturn indeks kolom pivot suatu baris matriks
+        for (int j = 0; j < this.kol - 1; j++) {
+            if(this.M[baris][j]==1) return j;
+        }
+        return -1;
+    }
+
+    public void solGJ(Matriks M){ //ngesolve matriks SPL Gauss/Gauss-Jordan
+        Scanner in = new Scanner(System.in);
+        M= M.reducedEchelon();
+        int[][] tabidx = new int[150][150];
+        Matriks tabsol = new Matriks();
+        boolean param = false;
+        int count0 =0;
+        int j;
+        int [] pivot = new int[150]; 
+        double [] Sol = new double[150];
+        for (int a = 0; a < Sol.length; a++) {
+            Sol[a] = -999; //idxundef
+        } 
+        int count;
+        String sol = "";
+        for (j = 0; j < M.kol - 1; j++) {
+            if(M.M[M.brs-1][j] == 0) count0++;
+        }
+        if((count0 == M.kol - 1) &&(M.M[M.brs-1][M.kol-1] != 0)){
+            System.out.println("Sistem tidak memiliki solusi");
+        }
+        else{
+            for (int i = 0; i < M.brs; i++) {
+                pivot[i] = idxPivot(i);
+                count = 0;
+                if(pivot[i]!=-1){
+                    for (j = pivot[i]+1; j < M.kol-1; j++) {
+                        if(M.M[i][j]!=0){
+                            count++;
+                            tabidx[i][count] = j;
+                            tabsol.M[i][count] = M.M[i][j] * -1;
+                        }   
+                    }
+                    tabidx[i][0] = count;
+                    tabsol.M[i][0] = M.M[i][M.kol-1];
+                }
+            }
+            String piv ="";
+            String tabs ="";
+            int ipar = 1;
+            for (int k = 0; k < M.brs; k++) {
+                if(pivot[k]!=-1){
+                    Sol[pivot[k]] = tabsol.M[k][0];
+                    piv = String.format("%d",pivot[k]+1);
+                    tabs = String.format("%.4f",tabsol.M[k][0]);
+                    sol += "X" + piv + " = " + tabs;
+                    for (int l = 1; l <= tabidx[k][0]; l++) {
+                        if(tabsol.M[k][l] > 0){
+                            tabs = String.format("%.4f",tabsol.M[k][l]);
+                                sol+=" + " + tabs + "a" + Integer.toString(ipar);
+                                ipar++;
+
+                            }
+                        else if(tabsol.M[k][l] < 0){
+                            tabs = String.format("%.4f",Math.abs(tabsol.M[k][l]));
+                            sol+=" - " + tabs + "a" + Integer.toString(ipar);
+                            ipar++;
+                            
+                        }
+
+                    }
+                    sol+="\n";
+
+                }
+            }
+
+            for (int c = 0; c < M.kol-1; c++) {
+                if(Sol[c]== -999){
+                    param = true;
+                    int tmp = c+1;
+                    sol+="X" + Integer.toString(tmp)+" ";
+                }
+            }
+
+            if(param){
+                sol+="variabel bebas\nVariabel bebas diatas jika direpresentasikan dalam bentuk parametrik :\n";
+             }
+            int cprm = 1;
+            for (int d = 0; d < M.kol-1; d++) {
+                if(Sol[d]== -999){
+                    int tmp = d+1;
+                    sol+="X" + Integer.toString(tmp)+" = "+"a"+Integer.toString(cprm)+"\n";
+                    cprm++;
+                }
+            }
+
+            System.out.println("Solusi dari SPL anda adalah : ");
+            System.out.println(sol);
+            System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+            int pil = in.nextInt();
+            while (pil!=0 && pil!=1){
+                System.out.println("Ulangi lagi");
+                System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+                pil = in.nextInt();
+            }
+            if(pil==1){
+                tulisfileSPL(sol);
+            }
+                
+        }
+
+    }
+
 
     public void splCramer() { //Solusi SPL metode Cramer
         Scanner in = new Scanner(System.in);
@@ -566,7 +712,7 @@ public class Matriks {
         }
         Double crdet = cr.detKofaktor();
         if (crdet == 0 || (crdet.isNaN())) {
-            System.out.println("Tidak ada solusi");
+            System.out.println("Tidak ada solusi,bisa jadi determinan = 0 atau NaN. Silakan gunakan metode lain");
         }
         else{
             System.out.println("Hasil Penyelesaian : ");
@@ -697,6 +843,8 @@ public class Matriks {
                     this.M[k][this.kol-1] = ip.M[r][1];
                     r++;
                 }
+                System.out.println("Masukan anda adalah : ");
+                this.tulisMatriks();
                 System.out.println();
                 System.out.print("Masukkan nilai x yang akan ditaksir nilai fungsinya : ");
                 xtak = in.nextDouble();                
@@ -705,8 +853,9 @@ public class Matriks {
         }
         return xtak;
     }
-        public void cramInterpol() throws Exception{ //Interpolasi with kofaktor, asumsi untuk setiap derajat n terdapat tepat n+1 buah titik unik
+        public void cramInterpol() throws Exception{ //Interpolasi with cramer, asumsi untuk setiap derajat n terdapat tepat n+1 buah titik unik
             // sehingga metode cramer valid , namun tidak berlaku untuk titik yang mengandung x = 0
+            // kemungkinan akan unused, dibuang sayang
             Scanner in = new Scanner(System.in);
             System.out.print("Baca dari keyboard(0) atau file(1) ? Input anda : ");
             Double xtak = 0.0000;
@@ -739,25 +888,28 @@ public class Matriks {
                     Double detcm = cm.detKofaktor();
                     double valx = detcm / crdet + 0.0000;
                     System.out.print("a"+l+" = ");
-                    System.out.printf("%.4f",valx);
+                    System.out.printf("%.16f",valx);
                     hasiltak += valx * Math.pow(xtak,l);
                     System.out.println();
-                    if(valx > 0.0000){
-                        if(pang==this.brs-1 && pang!=0) sol+=" + "+Double.toString(valx)+"x^"+pang; 
-                        else if(pang!=this.brs - 1 && pang!=0) sol += " + "+Double.toString(valx)+"x^"+pang;
-                        else sol+=Double.toString(valx); 
+                    String Valx ="";
+                    if(valx > 0){
+                        Valx = String.format("%.16f",valx);
+                        if(pang==this.brs-1 && pang!=0) sol+=" + "+Valx+"x^"+pang; 
+                        else if(pang!=this.brs - 1 && pang!=0) sol += " + "+Valx+"x^"+pang;
+                        else sol+=Valx; 
                     }
-                    else{
-                        if(pang==this.brs-1 && pang!=0) sol+=" "+Double.toString(valx)+"x^"+pang; 
-                        else if(pang!=this.brs - 1 && pang!=0) sol += " "+Double.toString(valx)+"x^"+pang;
-                        else sol+=Double.toString(valx); 
+                    else if (valx<0){
+                        Valx = String.format("%.16f",Math.abs(valx));
+                        if(pang==this.brs-1 && pang!=0) sol+=" - "+Valx+"x^"+pang; 
+                        else if(pang!=this.brs - 1 && pang!=0) sol += " - "+Valx+"x^"+pang;
+                        else sol+="- "+Valx; 
                     }
                     pang++;
                 }
 
                 System.out.println("Polinom interpolasi : ");
                 System.out.println(sol);
-                System.out.printf("Hasil taksiran pada x = %.2f adalah %.4f",xtak,hasiltak);
+                System.out.printf("Hasil taksiran pada x = %.4f adalah %.16f",xtak,hasiltak);
                 System.out.println();
                 System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
                 int pil = in.nextInt();
@@ -768,11 +920,94 @@ public class Matriks {
                     pil = in.nextInt();
                 }
                 if(pil==1){
-                    sol+="\n" + "Taksiran polinom di atas pada x = "+Double.toString(xtak)+" adalah "+Double.toString(hasiltak);
+                    String Hasiltak = String.format("%.16f",hasiltak);
+                    sol+="\n" + "Taksiran polinom di atas pada x = "+Double.toString(xtak)+" adalah "+Hasiltak;
                     tulisfileSPL(sol);
                 }
             }
         }
+
+        public void gjInterpol() throws Exception{ //Interpolasi polinom dengan eliminasi Gauss Jordan
+            Scanner in = new Scanner(System.in);
+            System.out.print("Baca dari keyboard(0) atau file(1) ? Input anda : ");
+            Double xtak = 0.0000;
+            Matriks gji = new Matriks();
+            int plh = in.nextInt();
+            while(plh!=0 && plh!=1){
+                System.out.print("Ulangi pembacaan. Baca dari keyboard(0) atau file(1) ? ");
+                plh = in.nextInt();
+            }
+            if(plh==0) xtak = this.kbInterpol();
+            else if(plh==1) xtak = this.bacafileInterpol();
+            
+            boolean havesol = true;
+            gji = this.reducedEchelon();
+            for (int i = 0; i < this.brs; i++) {
+                if(gji.M[i][this.kol-1]!=0){
+                    havesol = false;
+                    for (int j = 0; j < this.kol - 1; j++) {
+                        if(gji.M[i][j] != 0){
+                            havesol = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(!havesol){
+                System.out.println("Tidak dapat dibentuk polinom dari titik-titik tersebut");   
+            }
+            else{
+                System.out.println("Hasil Penyelesaian : ");
+                String sol = "P"+(this.brs - 1)+"(x) = ";
+                int pang = 0;
+                Double hasiltak = 0.0000;
+                for (int l = 0; l < this.brs; l++) {
+                    Double valx = gji.M[l][this.kol - 1];
+                    System.out.print("a"+l+" = ");
+                    System.out.printf("%.16f",valx);
+                    hasiltak += valx * Math.pow(xtak,l);
+                    System.out.println();
+                    String Valx = "";
+                    if(valx > 0){
+                        Valx = String.format("%.16f",valx);
+                        if(pang==this.brs-1 && pang!=0) sol+=" + "+Valx+"x^"+pang; 
+                        else if(pang!=this.brs - 1 && pang!=0) sol += " + "+Valx+"x^"+pang;
+                        else sol+=Valx; 
+                    }
+                    else if (valx<0){
+                        Valx = String.format("%.16f",Math.abs(valx));
+                        if(pang==this.brs-1 && pang!=0) sol+=" - "+Valx+"x^"+pang; 
+                        else if(pang!=this.brs - 1 && pang!=0) sol += " - "+Valx+"x^"+pang;
+                        else sol+="- "+Valx; 
+                    }
+                    pang++;
+                }
+
+                System.out.println("Polinom interpolasi : ");
+                System.out.println(sol);
+                System.out.printf("Hasil taksiran pada x = %.4f adalah %.16f",xtak,hasiltak);
+                System.out.println();
+                System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+                int pil = in.nextInt();
+
+               while (pil!=0 && pil!=1){
+                    System.out.println("Ulangi lagi");
+                    System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+                    pil = in.nextInt();
+                }
+                if(pil==1){
+                    String Hasiltak = String.format("%.16f",hasiltak);
+                    sol+="\n" + "Taksiran polinom di atas pada x = "+Double.toString(xtak)+" adalah "+Hasiltak;
+                    tulisfileSPL(sol);
+                }
+
+            }
+
+        }
+
+
+
+
         public Matriks seperate_main_Augmented(){ // Memisahkan augmented matriks
             Matriks main = new Matriks();
             int i,j;
