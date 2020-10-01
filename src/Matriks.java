@@ -1396,7 +1396,7 @@ public class Matriks {
         }
         else if(choice==1) {
             koef_b = this.Result_regresi_gauss();
-            boolean havesol = true;
+            /*boolean havesol = true;
             koef_b = koef_b.reducedEchelon();
             for ( i = 0; i < koef_b.brs; i++) {
                 if(koef_b.M[i][koef_b.kol-1]!=0){
@@ -1408,7 +1408,7 @@ public class Matriks {
                         }
                     }
                 }
-            }
+            }*/
             koef_b.tulisMatriks();
         }
         double count = 0;
