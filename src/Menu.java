@@ -113,6 +113,7 @@ public class Menu {
                     Matriks N = M.echelon();
                     System.out.println("Matriks hasil eliminasi Gauss : ");
                     N.tulisMatriks();
+                    System.out.println();
                     N.solGJ(N);
                 }
             else if(input==2){
@@ -120,12 +121,14 @@ public class Menu {
                     Matriks O = M.reducedEchelon();
                     System.out.println("Matriks hasil eliminasi Gauss-Jordan : ");
                     O.tulisMatriks();
+                    System.out.println();
                     O.solGJ(O);
                 }
             else if(input==3){
                 if(M.brs!=M.kol-1) System.out.println("Matriks tidak berlaku untuk operasi ini");
                 else{
                     //Balikan
+                    M.Matriks_SPLInv();
                 }
             }
             else if(input==4){
@@ -262,8 +265,21 @@ public class Menu {
             if(M.brs!=M.kol) System.out.println("Matriks tidak berlaku untuk operasi ini");
             else{
                 if(input==1){
-                    //Gauss Jordan
-                    //M.inverseGJ();
+                    // Gauss Jordan Invers
+                    M = M.Invers_gauss();
+                    M.tulisMatriks();
+                    System.out.println();
+                    System.out.print("Apakah anda ingin menyimpan output operasi ini(1) atau tidak(0)? ");
+                    ip = in.nextInt();
+                    while(ip!=0 && ip!=1){
+                        System.out.println("Ulangi lagi. Pastikan pilihan 0 atau 1");
+                        ip = in.nextInt();
+                    }
+                    if(ip==1){
+                        M.tulisfileMatriks();
+                    }
+
+                    
                 }
                 else if(input==2){
                     //Kofaktor

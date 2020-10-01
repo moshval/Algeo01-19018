@@ -638,6 +638,7 @@ public class Matriks {
             int ipar = 1;
             for (int k = 0; k < M.brs; k++) {
                 if(pivot[k]!=-1){
+                    ipar = 1;
                     Sol[pivot[k]] = tabsol.M[k][0];
                     piv = String.format("%d",pivot[k]+1);
                     tabs = String.format("%.4f",tabsol.M[k][0]);
@@ -645,8 +646,8 @@ public class Matriks {
                     for (int l = 1; l <= tabidx[k][0]; l++) {
                         if(tabsol.M[k][l] > 0){
                             tabs = String.format("%.4f",tabsol.M[k][l]);
-                                sol+=" + " + tabs + "a" + Integer.toString(ipar);
-                                ipar++;
+                            sol+=" + " + tabs + "a" + Integer.toString(ipar);
+                            ipar++;
 
                             }
                         else if(tabsol.M[k][l] < 0){
@@ -854,7 +855,7 @@ public class Matriks {
         return xtak;
     }
         public void cramInterpol() throws Exception{ //Interpolasi with cramer, asumsi untuk setiap derajat n terdapat tepat n+1 buah titik unik
-            // sehingga metode cramer valid , namun tidak berlaku untuk titik yang mengandung x = 0
+            // sehingga metode cramer valid
             // kemungkinan akan unused, dibuang sayang
             Scanner in = new Scanner(System.in);
             System.out.print("Baca dari keyboard(0) atau file(1) ? Input anda : ");
@@ -1068,18 +1069,39 @@ public class Matriks {
             return M3;
         }
 
-        public Matriks Matriks_SPLInv(){ // Membentuk matriks solusi SPL dengan metode invers
-
+        public void Matriks_SPLInv(){ // Membentuk matriks solusi SPL dengan metode invers
+            Scanner in = new Scanner(System.in);
             Matriks A = new Matriks();
             Matriks B = new Matriks();
             Matriks K = new Matriks();
-    
+            Matriks Sol = new Matriks();
+            String sol = "";
             A = this.seperate_main_Augmented();
             B = this.seperate_minor_Augmented();
             K = A.makeInverse();
+            System.out.println("Matriks hasil metode invers : ");
             K.tulisMatriks();
+            Sol = multiple(K,B);
+            for (int i = 0; i < Sol.brs; i++) {
+                int idx = i+1;
+                sol+="X"+Integer.toString(idx)+" = "+Double.toString(Sol.M[i][0])+"\n"; 
+            }
+            System.out.println("Hasil penyelesaian : ");
+            System.out.println(sol);
 
-            return multiple(K,B);
+            System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+            int pil = in.nextInt();
+            while (pil!=0 && pil!=1){
+                System.out.println("Ulangi lagi");
+                System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+                pil = in.nextInt();
+            }
+            if(pil==1){
+                tulisfileSPL(sol);
+            }
+
+
+
         }
 
         public Matriks Matriks_regresi(){ // Membentuk matriks regresi
