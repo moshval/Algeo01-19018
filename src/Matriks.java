@@ -1258,4 +1258,148 @@ public class Matriks {
     	    return M1;
         }
 
+    public Matriks kbRegresi(){ //Membaca input interpolasi polinom dari keyboard
+        Scanner in = new Scanner(System.in);
+        int N,brs;
+        int i,j;
+        Matriks M = new Matriks();
+        System.out.print("Masukkan jumlah peubah x : ");
+        N = in.nextInt();
+        System.out.print("Masukkan banyak baris  : ");
+        brs = in.nextInt();
+        this.brs = brs;
+        this.kol = N+1;
+        for (i = 0; i < this.brs; i++) {
+            for (j = 0; j < this.kol; j++) {
+                this.M[i][j] = in.nextDouble();
+            }
+        }
+        System.out.println();
+        Matriks x = new Matriks();
+        x.brs = 1;
+        x.kol = (this.kol); // elemen x[0][0] diisi 1 setelah indeks tersebut baru input parameter x nya
+        System.out.print("Masukkan peubah x yang akan ditaksir nilainya : ");
+        System.out.println();
+        x.M[0][0] = 1;
+        for (j = 1; j < x.kol; j++) {
+            x.M[0][j] = in.nextDouble();
+        }
+        return x;
+    }
+
+    //    public Double bacafileRegresi() throws Exception{ //Membaca input interpolasi dari file.txt
+//        String filename;
+//        Scanner in = new Scanner(System.in);
+//        System.out.print("Masukkan nama file regresi , (beserta ekstensi, contohnya matriks.txt) : ");
+//        filename = in.nextLine();
+//        filename = "../test/" + filename;
+//        if(Files.notExists(Paths.get(filename))) {
+//            System.out.println("File not found, ulangi lagi");
+//            this.bacafileInterpol();}
+//        else{
+//            FileReader fr = (new FileReader(filename));
+//            //BufferedReader br = new BufferedReader(fr);
+//            int elm;
+//            String mat = "";
+//            Matriks ip = new Matriks();
+//            while((elm=fr.read()) != -1){
+//                //System.out.print((char) line);
+//                mat +=((char)elm);
+//            }
+//            mat=mat.trim();
+//            //System.out.print(mat);
+//            mat+='\n';
+//            if (mat.length() != 0){
+//                int i = 0;
+//                int j = 0;
+//                int l = 0;
+//                String cc ="";
+//                while(l<mat.length()){
+//                    if(mat.charAt(l) == ' ') continue;
+//                    while ((mat.charAt(l) != ' ' && mat.charAt(l) != '\n')){
+//                        cc+=mat.charAt(l);
+//                        l++;
+//                    }
+//                    reg.M[i][j] = Double.parseDouble(cc);
+//                    j++;
+//                    cc= "";
+//
+//                    if((mat.charAt(l) == '\n')){
+//                        i++;
+//                        ip.kol = j;
+//                        j = 0;
+//                    }
+//                    l++;
+//                }
+//                reg.brs = i;
+//
+//                this.brs = reg.brs;
+//                this.kol = this.brs + 1;
+//                int r = 0;
+//                for (int k = 0; k < this.brs; k++) {
+//                    Double xi = 1.0000;
+//                    for (int m = 0; m < this.kol - 1; m++) {
+//                        this.M[k][m] = xi;
+//                        xi = xi*ip.M[r][0];
+//                    }
+//                    this.M[k][this.kol-1] = ip.M[r][1];
+//                    r++;
+//                }
+//                System.out.println();
+//                System.out.print("Masukkan peubah x yang akan ditaksir nilainya : ");
+//                System.out.println();
+//                x.M[0][0] = 1;
+//                for (j = 1; j < x.kol; j++) {
+//                    x.M[0][j] = in.nextDouble();
+//                }
+//            }
+//
+//        }
+//        return x;
+//    }
+    public void Regresi() throws Exception{ //Interpolasi with kofaktor, asumsi untuk setiap derajat n terdapat tepat n+1 buah titik unik
+        // sehingga metode cramer valid , namun tidak berlaku untuk titik yang mengandung x = 0
+        Scanner in = new Scanner(System.in);
+        int i,j;
+        String sol = "";
+        Matriks x = new Matriks();
+        System.out.print("Baca dari keyboard(0) atau file(1) ? Input anda : ");
+        Double xtak = 0.0000;
+        int plh = in.nextInt();
+        while(plh!=0 && plh!=1){
+            System.out.print("Ulangi pembacaan. Baca dari keyboard(0) atau file(1) ? ");
+            plh = in.nextInt();
+        }
+        if(plh==0) {
+            x = this.kbRegresi();
+        }
+        else if(plh==1) {
+//          x = this.bacafileRegresi();
+        }
+        Matriks koef_b = this.Result_regresi_inv();
+
+        koef_b.tulisMatriks();
+
+        double count = 0;
+        for(i = 0; i < x.brs ; i++){
+            for(j = 0; j < x.kol ; j++){
+                count += (x.M[i][j])*(koef_b.M[j][i]);
+            }
+        }
+        System.out.printf("Hasil taksiran regresi adalah %.4f",count);
+        System.out.println();
+        System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+        int pil = in.nextInt();
+
+        while (pil!=0 && pil!=1){
+            System.out.println("Ulangi lagi");
+            System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+            pil = in.nextInt();
+        }
+        if(pil==1){
+            sol+="\n" + "Taksiran regresi linier berganda dari data tersebut adalah = "+Double.toString(count);
+            tulisfileSPL(sol);
+        }
+    }
+
 }
