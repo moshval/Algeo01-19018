@@ -5,6 +5,10 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.lang.*;
 
+// How to run (di cmd) dan pastikan sudah di folder Algeo01-19018:
+// cd bin
+// Java Menu
+
 public class Menu {
     public static void main(String[] args ) throws Exception {
         Scanner in = new Scanner(System.in);
@@ -269,6 +273,7 @@ public class Menu {
                 	M = M.Merged_Identity();
                     M = M.reducedEchelon();
                     M = M.Invers_gauss();
+                    System.out.println("Matriks hasil invers : ");
                     M.tulisMatriks();
                     System.out.println();
                     System.out.print("Apakah anda ingin menyimpan output operasi ini(1) atau tidak(0)? ");
@@ -284,8 +289,9 @@ public class Menu {
                     
                 }
                 else if(input==2){
-                    //Kofaktor
+                    //Adjoin
                     M = M.makeInverse();
+                    System.out.println("Matriks hasil invers : ");
                     M.tulisMatriks();
                     System.out.println();
                     System.out.print("Apakah anda ingin menyimpan output operasi ini(1) atau tidak(0)? ");

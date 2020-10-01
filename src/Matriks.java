@@ -186,7 +186,7 @@ public class Matriks {
                 konst = -1.0;
             }
             for (int j = 0; j < kf.kol; j++) {
-                kf.M[i][j] = konst * ((this.makeMinor(i, j)).detKofaktor());
+                kf.M[i][j] = konst * ((this.makeMinor(i, j)).detGJ());
                 konst = -1.0*konst;
             }
         }
@@ -242,10 +242,10 @@ public class Matriks {
                     }
                 }
                 if(i%2 == 0){
-                    det+=dk.M[i][0] * (mnr.detKofaktor());
+                    det+=dk.M[i][0] * (mnr.detGJ());
                 }
                 else{
-                    det+=dk.M[i][0] * (mnr.detKofaktor()) * -1.0000;
+                    det+=dk.M[i][0] * (mnr.detGJ()) * -1.0000;
                 }
             }
 
@@ -298,10 +298,10 @@ public class Matriks {
     
     public Matriks makeInverse(){ // Membuat invers suatu matriks , metode adjoin , berlaku untuk matriks persegi
         Matriks inv = this.makeAdjoint();
-        if(this.detKofaktor() != 0){
+        if(this.detGJ() != 0){
             if(this.brs == 1 && this.kol ==1 && this.M[0][0] != 0) inv.M[0][0] = 1/this.M[0][0];
             else{
-                double perdet = this.detKofaktor();
+                double perdet = this.detGJ();
                 for (int i = 0; i < inv.brs; i++) {
                     for (int j = 0; j < inv.kol; j++) {
                         inv.M[i][j] =  inv.M[i][j] / perdet;
@@ -1068,43 +1068,46 @@ public class Matriks {
             return M3;
         }
 
-    public void Matriks_SPLInv(){ // Membentuk matriks solusi SPL dengan metode invers
-        Scanner in = new Scanner(System.in);
-        Matriks A = new Matriks();
-        Matriks B = new Matriks();
-        Matriks C = new Matriks();
-        Matriks D = new Matriks();
-        Matriks K = new Matriks();
-        Matriks Sol = new Matriks();
-        String sol = "";
-        A = this.seperate_main_Augmented();
-        B = this.seperate_minor_Augmented();
-        C = A.Merged_Identity();
-        D = C.reducedEchelon();
-        K = D.Invers_gauss();
-
-        System.out.println("Matriks hasil metode invers : ");
-        Sol = multiple(K,B);
-        Sol.tulisMatriks();
-        for (int i = 0; i < Sol.brs; i++) {
-            int idx = i+1;
-            sol+="X"+Integer.toString(idx)+" = "+Double.toString(Sol.M[i][0])+"\n";
+        public void Matriks_SPLInv(){ // Membentuk matriks solusi SPL dengan metode invers
+            Scanner in = new Scanner(System.in);
+            Matriks A = new Matriks();
+            Matriks B = new Matriks();
+            Matriks C = new Matriks();
+            Matriks D = new Matriks();
+            Matriks K = new Matriks();
+            Matriks Sol = new Matriks();
+            String sol = "";
+            A = this.seperate_main_Augmented();
+            B = this.seperate_minor_Augmented();
+            C = A.Merged_Identity();
+            D = C.reducedEchelon();
+            K = D.Invers_gauss();
+            double det = A.detGJ() + 0.0000;
+            if(det != 0.0000) {
+                System.out.println("Matriks hasil metode invers : ");
+                Sol = multiple(K, B);
+                Sol.tulisMatriks();
+                for (int i = 0; i < Sol.brs; i++) {
+                    int idx = i + 1;
+                    sol += "X" + Integer.toString(idx) + " = " + Double.toString(Sol.M[i][0]) + "\n";
+                }
+                System.out.println("Hasil penyelesaian : ");
+                System.out.println(sol);
+    
+                System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+                int pil = in.nextInt();
+                while (pil != 0 && pil != 1) {
+                    System.out.println("Ulangi lagi");
+                    System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+                    pil = in.nextInt();
+                }
+                if (pil == 1) {
+                    tulisfileSPL(sol);
+                }
+            }else{
+                System.out.println("Matriks tidak memiliki solusi\n");
+            }
         }
-        System.out.println("Hasil penyelesaian : ");
-        System.out.println(sol);
-
-        System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
-        int pil = in.nextInt();
-        while (pil!=0 && pil!=1){
-            System.out.println("Ulangi lagi");
-            System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
-            pil = in.nextInt();
-        }
-        if(pil==1){
-            tulisfileSPL(sol);
-        }
-        
-    }
 
         public Matriks Matriks_regresi(){ // Membentuk matriks regresi
             Matriks reg = new Matriks();
@@ -1342,7 +1345,6 @@ public class Matriks {
         }
         return x;
     }
-
     public void Regresi() throws Exception{ //Interpolasi with kofaktor, asumsi untuk setiap derajat n terdapat tepat n+1 buah titik unik
         // sehingga metode cramer valid , namun tidak berlaku untuk titik yang mengandung x = 0
         Scanner in = new Scanner(System.in);
@@ -1376,6 +1378,23 @@ public class Matriks {
         }
         else if(choice==1) {
             koef_b = this.Result_regresi_gauss();
+        }
+
+        String polinom = "y = "+(String.format("%.4f",(koef_b.M[0][0])))+" + ";
+
+        for (i = 1; i < (koef_b.brs)-1 ; i++) {
+            polinom+= (String.format("%.4f",(koef_b.M[i][0])))+"X"+(Integer.toString(i))+" + ";
+        }
+        int last = (koef_b.brs) - 1;
+        polinom += (String.format("%.4f",koef_b.M[last][0]))+"X"+Integer.toString(last);
+
+        System.out.println("Polinom regresi linier berganda adalah : ");
+        System.out.println(polinom);
+        System.out.println();
+
+        double count = 0;
+        for(i = 0; i < x.brs ; i++){
+            for(j = 0; j < x.kol ; j++){
                 count += (x.M[i][j])*(koef_b.M[j][i]);
             }
         }
@@ -1390,9 +1409,11 @@ public class Matriks {
             pil = in.nextInt();
         }
         if(pil==1){
+            sol+="\n" + "Hasil taksiran regresi linier berganda dari data tersebut adalah = "+Double.toString(count);
             tulisfileSPL(sol);
         }
     }
+ 
 
 
 }
