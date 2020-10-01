@@ -1063,40 +1063,43 @@ public class Matriks {
             return M3;
         }
 
-        public void Matriks_SPLInv(){ // Membentuk matriks solusi SPL dengan metode invers
-            Scanner in = new Scanner(System.in);
-            Matriks A = new Matriks();
-            Matriks B = new Matriks();
-            Matriks K = new Matriks();
-            Matriks Sol = new Matriks();
-            String sol = "";
-            A = this.seperate_main_Augmented();
-            B = this.seperate_minor_Augmented();
-            K = A.makeInverse();
-            System.out.println("Matriks hasil metode invers : ");
-            K.tulisMatriks();
-            Sol = multiple(K,B);
-            for (int i = 0; i < Sol.brs; i++) {
-                int idx = i+1;
-                sol+="X"+Integer.toString(idx)+" = "+Double.toString(Sol.M[i][0])+"\n"; 
-            }
-            System.out.println("Hasil penyelesaian : ");
-            System.out.println(sol);
+    public void Matriks_SPLInv(){ // Membentuk matriks solusi SPL dengan metode invers
+        Scanner in = new Scanner(System.in);
+        Matriks A = new Matriks();
+        Matriks B = new Matriks();
+        Matriks C = new Matriks();
+        Matriks D = new Matriks();
+        Matriks K = new Matriks();
+        Matriks Sol = new Matriks();
+        String sol = "";
+        A = this.seperate_main_Augmented();
+        B = this.seperate_minor_Augmented();
+        C = A.Merged_Identity();
+        D = C.reducedEchelon();
+        K = D.Invers_gauss();
 
-            System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
-            int pil = in.nextInt();
-            while (pil!=0 && pil!=1){
-                System.out.println("Ulangi lagi");
-                System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
-                pil = in.nextInt();
-            }
-            if(pil==1){
-                tulisfileSPL(sol);
-            }
-
-
-
+        System.out.println("Matriks hasil metode invers : ");
+        Sol = multiple(K,B);
+        Sol.tulisMatriks();
+        for (int i = 0; i < Sol.brs; i++) {
+            int idx = i+1;
+            sol+="X"+Integer.toString(idx)+" = "+Double.toString(Sol.M[i][0])+"\n";
         }
+        System.out.println("Hasil penyelesaian : ");
+        System.out.println(sol);
+
+        System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+        int pil = in.nextInt();
+        while (pil!=0 && pil!=1){
+            System.out.println("Ulangi lagi");
+            System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+            pil = in.nextInt();
+        }
+        if(pil==1){
+            tulisfileSPL(sol);
+        }
+        
+    }
 
         public Matriks Matriks_regresi(){ // Membentuk matriks regresi
             Matriks reg = new Matriks();
@@ -1146,51 +1149,37 @@ public class Matriks {
             return multiple(K,C);
         }
 
-        public Matriks Result_regresi_gauss(){ // Membentuk matriks eselon dari matriks regresi
-            Matriks A = new Matriks();
-            Matriks B = new Matriks();
+    public Matriks Result_regresi_gauss(){ // Membentuk matriks eselon dari matriks regresi
+        Matriks A = new Matriks();
+        Matriks B = new Matriks();
+        Matriks C = new Matriks();
 
-            A = this.Matriks_regresi();
-            B = A.echelon();
+        C.brs = this.kol;
+        C.kol = 1;
+        int i,j;
 
-            return B;
-        }
-
-        public double Compute_regresi_inv(){
-            Matriks M = new Matriks();
-            int N;
-            int i,j;
-            Matriks x = new Matriks();
-            x.brs = 1;
-            x.kol = (this.kol); // elemen x[0][0] diisi 1 setelah indeks tersebut baru input parameter x nya
-
-            Scanner in = new Scanner(System.in);
-            N = in.nextInt();
-            M.brs = 20;
-            M.kol = N+1;
-
-            for (i = 0; i < M.brs; i++) {
-                for (j = 0; j < M.kol; j++) {
-                    M.M[i][j] = in.nextDouble();
+        A = this.Matriks_regresi();
+        B = A.reducedEchelon();
+        B.tulisMatriks();
+        boolean havesol = true;
+        for ( i = 0; i < B.brs; i++) {
+            if(B.M[i][B.kol-1]!=0){
+                havesol = false;
+                for ( j = 0; j < A.kol - 1; j++) {
+                    if(B.M[i][j] != 0){
+                        havesol = true;
+                        break;
+                    }
                 }
             }
-
-            Matriks koef_b = M.Result_regresi_inv();
-
-            x.M[0][0] = 1;
-            for (j = 1; j < x.kol; j++) {
-                x.M[0][j] = in.nextDouble();
-            }
-
-            double count = 0;
-            for(i = 0; i < x.brs ; i++){
-                for(j = 0; j < x.kol ; j++){
-                    count += (x.M[i][j])*(koef_b.M[j][i]);
-                }
-            }
-
-            return count;
         }
+        if (havesol) {
+            for (i = 0; i < B.brs; i++) {
+                C.M[i][0] = B.M[i][(B.kol) - 1];
+            }
+        }
+        return C;
+    }
 
         public boolean Is_identity(Matriks M){
             int i,j;
@@ -1348,6 +1337,7 @@ public class Matriks {
         }
         return x;
     }
+
     public void Regresi() throws Exception{ //Interpolasi with kofaktor, asumsi untuk setiap derajat n terdapat tepat n+1 buah titik unik
         // sehingga metode cramer valid , namun tidak berlaku untuk titik yang mengandung x = 0
         Scanner in = new Scanner(System.in);
@@ -1369,23 +1359,31 @@ public class Matriks {
             x = this.bacafileRegresi();
         }
 
-        System.out.print("Mau menggunakan metode invers(0) atau gauss(1) ? Input Anda ");
-
+        System.out.print("Mau menggunakan metode invers(0) atau gauss(1) ? Input Anda : ");
         int choice = in.nextInt();
+        System.out.println();
         while(plh!=0 && plh!=1){
             System.out.print("Ulangi pembacaan. Mau menggunakan metode invers(0) atau gauss(1) ? ");
             choice = in.nextInt();
         }
         if(choice==0) {
             koef_b = this.Result_regresi_inv();
-            koef_b.tulisMatriks();
         }
         else if(choice==1) {
-            koef_b = this.Result_regresi_inv();
-            koef_b.tulisMatriks();
+            koef_b = this.Result_regresi_gauss();
         }
 
+        String polinom = "y = "+(String.format("%.4f",(koef_b.M[0][0])))+" + ";
 
+        for (i = 1; i < (koef_b.brs)-1 ; i++) {
+            polinom+= (String.format("%.4f",(koef_b.M[i][0])))+"X"+(Integer.toString(i))+" + ";
+        }
+        int last = (koef_b.brs) - 1;
+        polinom += (String.format("%.4f",koef_b.M[last][0]))+"X"+Integer.toString(last);
+
+        System.out.println("Polinom regresi linier berganda adalah : ");
+        System.out.println(polinom);
+        System.out.println();
 
         double count = 0;
         for(i = 0; i < x.brs ; i++){
@@ -1395,7 +1393,7 @@ public class Matriks {
         }
         System.out.printf("Hasil taksiran regresi linier berganda adalah %.4f",count);
         System.out.println();
-        System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+        System.out.println("\nApakah anda mau menyimpan hasil ke file? (0/1) : ");
         int pil = in.nextInt();
 
         while (pil!=0 && pil!=1){
@@ -1408,5 +1406,6 @@ public class Matriks {
             tulisfileSPL(sol);
         }
     }
+
 
 }
