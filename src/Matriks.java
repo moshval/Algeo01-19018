@@ -333,12 +333,11 @@ public class Matriks {
         }
     }
     
-    public Matriks echelon ()
+    public Matriks echelon () // Membuat (membalikkan) matriks echelon
     {
     	int i,j,k;
     	int N = this.brs;
     	int O = this.kol;
-    	//double[][] M1 = new double[N+1][O+1];
     	Matriks M1 = new Matriks ();
     	Matriks M2 = new Matriks ();
     	M1.brs = N+1;
@@ -358,20 +357,21 @@ public class Matriks {
 	    while( i<=N && j<=O )
 	    {
             k = i;
-	        while( k<=N && M1.M[k][j]==0 ) k++;
-
+	        while( k<=N && M1.M[k][j]==0 ) 
+	        	k++;
+	        
 	        if( k<=N )
 	        {
 	            if( k!=i ) 
 	            {
-	               swap(M1.M, i, k, j);
+	            	swapOBE(M1, i, k, j);
 	            }
 
 	            if( M1.M[i][j]!=1 )
 	            {
-	               divide(M1.M, i, j);
+	               divide(M1, i, j);
 	            }
-	            eliminateRE(M1.M, i, j);
+	            eliminateRE(M1, i, j, i);
 	            i++;
 	         }
 	         j++;
@@ -388,7 +388,7 @@ public class Matriks {
 	    return M2;
     }
     
-    public Matriks reducedEchelon ()
+    public Matriks reducedEchelon () // Membuat (membalikkan) matriks reduced echelon
     {
     	int i,j,k;
     	int N = this.brs;
@@ -412,19 +412,20 @@ public class Matriks {
 	    while( i<=N && j<=O )
 	    {
 	        k = i;
-	        while( k<=N && M1.M[k][j]==0 ) k++;
+	        while( k<=N && M1.M[k][j]==0 )
+	        	k++;
 	        if( k<=N )
 	        {
 	            if( k!=i ) 
 	            {
-	               swap(M1.M, i, k, j);
+	            	swapOBE(M1, i, k, j);
 	            }
 
 	            if( M1.M[i][j]!=1 )
 	            {
-	               divide(M1.M, i, j);
+	            	divide(M1, i, j);
 	            }
-	            eliminateRRE(M1.M, i, j);
+	            eliminateRE(M1, i, j, 1);
 	            i++;
 	         }
 	         j++;
@@ -438,64 +439,54 @@ public class Matriks {
 	    }
 	    return M2;
     }
-    	
-    public void eliminateRRE (double[][] M, int i, int j)
+    
+    public void eliminateRE (Matriks M, int i, int j, int l) // Mengeliminasi element non-zero pada matriks
     {
-    	int n = M.length - 1;
-	    int m = M[0].length - 1;
-	    for(int p=1; p<=n; p++)
+    	int k,n,m,q;
+    	double factor;
+	    n = M.brs;
+	    m = M.kol;
+	    for(k=l; k<=n; k++)
 	    {
-	       if( p!=i && M[p][j]!=0 )
+	       if( k!=i && M.M[k][j]!=0 )
 	       {
-	          for(int q=j+1; q<=m; q++)
+	          for(q=j+1; q<=m; q++)
 	          {
-	             M[p][q] -= M[p][j]*M[i][q];
+	        	  factor = M.M[i][q];
+	        	  M.M[k][q] -= M.M[k][j]*factor;
 	          }
-	          M[p][j] = 0;
+	          M.M[k][j] = 0;
 	       }
 	    }
     }
     
-    public void eliminateRE (double[][] M, int i, int j)
+    public void divide (Matriks M, int i, int j) // Membagi matriks supaya M[i][j]==1
     {
-    	int n = M.length - 1;
-	    int m = M[0].length - 1;
-	    for(int p=i; p<=n; p++)
+    	int k,m; 
+    	double factor;
+    	m = M.kol;
+    	factor = M.M[i][j];
+	    for(k=j+1; k<m; k++)
 	    {
-	       if( p!=i && M[p][j]!=0 )
-	       {
-	          for(int q=j+1; q<=m; q++)
-	          {
-	             M[p][q] -= M[p][j]*M[i][q];
-	          }
-	          M[p][j] = 0;
-	       }
+	    	M.M[i][k] /= factor;
 	    }
-    }
-    
-    public void divide (double[][] M, int i, int j)
-    {
-	    int k;  
-    	int m = M[0].length - 1;
-	    for(k=j+1; k<=m; k++)
-	    {
-	    	M[i][k] /= M[i][j];
-	    }
-	    M[i][j] = 1;
+	    M.M[i][j] = 1;
 	}
     
-    static void swap(double[][] M, int i, int k, int j)
+    static void swapOBE (Matriks M, int i, int k, int j) // Swap row matriks pada operasi OBE
     {
-	      int m = M[0].length - 1;
-	      double temp;
-	      for(int q=j; q<=m; q++){
-	         temp = M[i][q];
-	         M[i][q] = M[k][q];
-	         M[k][q] = temp;
-	      }
+    	int m,q;
+	    double temp;
+    	m = M.kol;
+	    for(q=j; q<m; q++)
+	    {
+	    	temp = M.M[i][q];
+	    	M.M[i][q] = M.M[k][q];
+	    	M.M[k][q] = temp;
+	    }
 	}
     
-    public void splGaussJordan (Matriks M) 
+    public void splGaussJordan (Matriks M) // Memberikan solusi SPL dengan metode GaussJordan
     {
         M=M.reducedEchelon();
         System.out.println("Matriks hasil eliminasi Gauss-Jordan : ");
@@ -507,9 +498,9 @@ public class Matriks {
     	int N = M.brs;
     	int O = M.kol;
     	     
-        // flag == 1 berarti ada solusi unik
-        // flag == 2 berarti solusi parametrik
-        // flag == 3 berarti tidak mempunyai solusi
+        // mark == 1 berarti ada solusi unik
+        // mark == 2 berarti solusi parametrik
+        // mark == 3 berarti tidak mempunyai solusi
 
         if (N == O-1) {
         	mark = 1;
@@ -539,7 +530,7 @@ public class Matriks {
     	
     }
     
-    public void splGauss (Matriks M) 
+    public void splGauss (Matriks M) // Memberikan solusi SPL dengan metode Gauss
     {
         M=M.echelon();
         System.out.println("Matriks hasil eliminasi Gauss : ");
@@ -1077,40 +1068,43 @@ public class Matriks {
             return M3;
         }
 
-        public void Matriks_SPLInv(){ // Membentuk matriks solusi SPL dengan metode invers
-            Scanner in = new Scanner(System.in);
-            Matriks A = new Matriks();
-            Matriks B = new Matriks();
-            Matriks K = new Matriks();
-            Matriks Sol = new Matriks();
-            String sol = "";
-            A = this.seperate_main_Augmented();
-            B = this.seperate_minor_Augmented();
-            K = A.makeInverse();
-            System.out.println("Matriks hasil metode invers : ");
-            K.tulisMatriks();
-            Sol = multiple(K,B);
-            for (int i = 0; i < Sol.brs; i++) {
-                int idx = i+1;
-                sol+="X"+Integer.toString(idx)+" = "+Double.toString(Sol.M[i][0])+"\n"; 
-            }
-            System.out.println("Hasil penyelesaian : ");
-            System.out.println(sol);
+    public void Matriks_SPLInv(){ // Membentuk matriks solusi SPL dengan metode invers
+        Scanner in = new Scanner(System.in);
+        Matriks A = new Matriks();
+        Matriks B = new Matriks();
+        Matriks C = new Matriks();
+        Matriks D = new Matriks();
+        Matriks K = new Matriks();
+        Matriks Sol = new Matriks();
+        String sol = "";
+        A = this.seperate_main_Augmented();
+        B = this.seperate_minor_Augmented();
+        C = A.Merged_Identity();
+        D = C.reducedEchelon();
+        K = D.Invers_gauss();
 
-            System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
-            int pil = in.nextInt();
-            while (pil!=0 && pil!=1){
-                System.out.println("Ulangi lagi");
-                System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
-                pil = in.nextInt();
-            }
-            if(pil==1){
-                tulisfileSPL(sol);
-            }
-
-
-
+        System.out.println("Matriks hasil metode invers : ");
+        Sol = multiple(K,B);
+        Sol.tulisMatriks();
+        for (int i = 0; i < Sol.brs; i++) {
+            int idx = i+1;
+            sol+="X"+Integer.toString(idx)+" = "+Double.toString(Sol.M[i][0])+"\n";
         }
+        System.out.println("Hasil penyelesaian : ");
+        System.out.println(sol);
+
+        System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+        int pil = in.nextInt();
+        while (pil!=0 && pil!=1){
+            System.out.println("Ulangi lagi");
+            System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+            pil = in.nextInt();
+        }
+        if(pil==1){
+            tulisfileSPL(sol);
+        }
+        
+    }
 
         public Matriks Matriks_regresi(){ // Membentuk matriks regresi
             Matriks reg = new Matriks();
@@ -1160,51 +1154,37 @@ public class Matriks {
             return multiple(K,C);
         }
 
-        public Matriks Result_regresi_gauss(){ // Membentuk matriks eselon dari matriks regresi
-            Matriks A = new Matriks();
-            Matriks B = new Matriks();
+    public Matriks Result_regresi_gauss(){ // Membentuk matriks eselon dari matriks regresi
+        Matriks A = new Matriks();
+        Matriks B = new Matriks();
+        Matriks C = new Matriks();
 
-            A = this.Matriks_regresi();
-            B = A.echelon();
+        C.brs = this.kol;
+        C.kol = 1;
+        int i,j;
 
-            return B;
-        }
-
-        public double Compute_regresi_inv(){
-            Matriks M = new Matriks();
-            int N;
-            int i,j;
-            Matriks x = new Matriks();
-            x.brs = 1;
-            x.kol = (this.kol); // elemen x[0][0] diisi 1 setelah indeks tersebut baru input parameter x nya
-
-            Scanner in = new Scanner(System.in);
-            N = in.nextInt();
-            M.brs = 20;
-            M.kol = N+1;
-
-            for (i = 0; i < M.brs; i++) {
-                for (j = 0; j < M.kol; j++) {
-                    M.M[i][j] = in.nextDouble();
+        A = this.Matriks_regresi();
+        B = A.reducedEchelon();
+        B.tulisMatriks();
+        boolean havesol = true;
+        for ( i = 0; i < B.brs; i++) {
+            if(B.M[i][B.kol-1]!=0){
+                havesol = false;
+                for ( j = 0; j < A.kol - 1; j++) {
+                    if(B.M[i][j] != 0){
+                        havesol = true;
+                        break;
+                    }
                 }
             }
-
-            Matriks koef_b = M.Result_regresi_inv();
-
-            x.M[0][0] = 1;
-            for (j = 1; j < x.kol; j++) {
-                x.M[0][j] = in.nextDouble();
-            }
-
-            double count = 0;
-            for(i = 0; i < x.brs ; i++){
-                for(j = 0; j < x.kol ; j++){
-                    count += (x.M[i][j])*(koef_b.M[j][i]);
-                }
-            }
-
-            return count;
         }
+        if (havesol) {
+            for (i = 0; i < B.brs; i++) {
+                C.M[i][0] = B.M[i][(B.kol) - 1];
+            }
+        }
+        return C;
+    }
 
         public boolean Is_identity(Matriks M){
             int i,j;
@@ -1362,6 +1342,7 @@ public class Matriks {
         }
         return x;
     }
+
     public void Regresi() throws Exception{ //Interpolasi with kofaktor, asumsi untuk setiap derajat n terdapat tepat n+1 buah titik unik
         // sehingga metode cramer valid , namun tidak berlaku untuk titik yang mengandung x = 0
         Scanner in = new Scanner(System.in);
@@ -1383,43 +1364,24 @@ public class Matriks {
             x = this.bacafileRegresi();
         }
 
-        System.out.print("Mau menggunakan metode invers(0) atau gauss(1) ? Input Anda ");
-
+        System.out.print("Mau menggunakan metode invers(0) atau gauss(1) ? Input Anda : ");
         int choice = in.nextInt();
+        System.out.println();
         while(plh!=0 && plh!=1){
             System.out.print("Ulangi pembacaan. Mau menggunakan metode invers(0) atau gauss(1) ? ");
             choice = in.nextInt();
         }
         if(choice==0) {
             koef_b = this.Result_regresi_inv();
-            koef_b.tulisMatriks();
         }
         else if(choice==1) {
             koef_b = this.Result_regresi_gauss();
-            /*boolean havesol = true;
-            koef_b = koef_b.reducedEchelon();
-            for ( i = 0; i < koef_b.brs; i++) {
-                if(koef_b.M[i][koef_b.kol-1]!=0){
-                    havesol = false;
-                    for ( j = 0; j < this.kol - 1; j++) {
-                        if(koef_b.M[i][j] != 0){
-                            havesol = true;
-                            break;
-                        }
-                    }
-                }
-            }*/
-            koef_b.tulisMatriks();
-        }
-        double count = 0;
-        for(i = 0; i < x.brs ; i++){
-            for(j = 0; j < x.kol ; j++){
                 count += (x.M[i][j])*(koef_b.M[j][i]);
             }
         }
         System.out.printf("Hasil taksiran regresi linier berganda adalah %.4f",count);
         System.out.println();
-        System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
+        System.out.println("\nApakah anda mau menyimpan hasil ke file? (0/1) : ");
         int pil = in.nextInt();
 
         while (pil!=0 && pil!=1){
@@ -1428,9 +1390,9 @@ public class Matriks {
             pil = in.nextInt();
         }
         if(pil==1){
-            sol+="\n" + "Hasil taksiran regresi linier berganda dari data tersebut adalah = "+Double.toString(count);
             tulisfileSPL(sol);
         }
     }
+
 
 }
