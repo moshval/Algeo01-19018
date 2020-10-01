@@ -1083,7 +1083,7 @@ public class Matriks {
             D = C.reducedEchelon();
             K = D.Invers_gauss();
             double det = A.detGJ() + 0.0000;
-            if(det != 0.0000) {
+            if(det == 0.0000) {
                 System.out.println("Matriks hasil metode invers : ");
                 Sol = multiple(K, B);
                 Sol.tulisMatriks();
