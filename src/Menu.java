@@ -349,7 +349,7 @@ public class Menu {
 
     public static void displayMenu5(Matriks M) throws Exception{ //Regresi Linear
         Scanner in = new Scanner(System.in);
-        // Regresi Linear
+        M.Regresi();
         System.out.print("Apakah anda ingin tetap melakukan operasi ini(0) atau move on(1)? ");
         int input = in.nextInt();
         while(input!=0 && input!=1){

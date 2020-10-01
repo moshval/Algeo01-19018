@@ -602,6 +602,7 @@ public class Matriks {
         int[][] tabidx = new int[150][150];
         Matriks tabsol = new Matriks();
         boolean param = false;
+        boolean havesol = true;
         int count0 =0;
         int j;
         int [] pivot = new int[150]; 
@@ -611,13 +612,17 @@ public class Matriks {
         } 
         int count;
         String sol = "";
-        for (j = 0; j < M.kol - 1; j++) {
-            if(M.M[M.brs-1][j] == 0) count0++;
-        }
-        if((count0 == M.kol - 1) &&(M.M[M.brs-1][M.kol-1] != 0)){
+        for (j = 0; j < M.brs; j++) {
+            count0 = 0;
+            for (int j2 = 0; j2 < M.kol-1; j2++) {
+                if(M.M[j][j2] == 0) count0++;
+            }
+        if((count0 == M.kol - 1) &&(M.M[j][M.kol-1] != 0)){
             System.out.println("Sistem tidak memiliki solusi");
+            havesol = false;
+            break;}
         }
-        else{
+        if(havesol==true){
             for (int i = 0; i < M.brs; i++) {
                 pivot[i] = idxPivot(i);
                 count = 0;
@@ -714,7 +719,7 @@ public class Matriks {
                 cr.M[i][j] = this.M[i][j];
             }
         }
-        Double crdet = cr.detKofaktor();
+        Double crdet = cr.detGJ();
         if (crdet == 0 || (crdet.isNaN())) {
             System.out.println("Tidak ada solusi,bisa jadi determinan = 0 atau NaN. Silakan gunakan metode lain");
         }
@@ -723,7 +728,7 @@ public class Matriks {
             String sol = "";
             for (int l = 0; l < cr.kol; l++) {
                 Matriks cm = this.makeCramer(l);
-                Double detcm = cm.detKofaktor();
+                Double detcm = cm.detGJ();
                 double valx = detcm / crdet + 0.0000;
                 System.out.print("X"+(l+1)+" = ");
                 System.out.printf("%.4f",valx);
@@ -878,7 +883,7 @@ public class Matriks {
                     cr.M[i][j] = this.M[i][j];
                 }
             }
-            Double crdet = cr.detKofaktor();
+            Double crdet = cr.detGJ();
             if (crdet == 0 || (crdet.isNaN())) {
                 System.out.println("Tidak ada solusi");
             }
@@ -889,7 +894,7 @@ public class Matriks {
                 Double hasiltak = 0.0000;
                 for (int l = 0; l < cr.kol; l++) {
                     Matriks cm = this.makeCramer(l);
-                    Double detcm = cm.detKofaktor();
+                    Double detcm = cm.detGJ();
                     double valx = detcm / crdet + 0.0000;
                     System.out.print("a"+l+" = ");
                     System.out.printf("%.16f",valx);
@@ -972,7 +977,7 @@ public class Matriks {
                     hasiltak += valx * Math.pow(xtak,l);
                     System.out.println();
                     String Valx = "";
-                    if(valx > 0){
+                    if(valx >= 0){
                         Valx = String.format("%.16f",valx);
                         if(pang==this.brs-1 && pang!=0) sol+=" + "+Valx+"x^"+pang; 
                         else if(pang!=this.brs - 1 && pang!=0) sol += " + "+Valx+"x^"+pang;
@@ -1390,12 +1395,22 @@ public class Matriks {
             koef_b.tulisMatriks();
         }
         else if(choice==1) {
-            koef_b = this.Result_regresi_inv();
+            koef_b = this.Result_regresi_gauss();
+            boolean havesol = true;
+            koef_b = koef_b.reducedEchelon();
+            for ( i = 0; i < koef_b.brs; i++) {
+                if(koef_b.M[i][koef_b.kol-1]!=0){
+                    havesol = false;
+                    for ( j = 0; j < this.kol - 1; j++) {
+                        if(koef_b.M[i][j] != 0){
+                            havesol = true;
+                            break;
+                        }
+                    }
+                }
+            }
             koef_b.tulisMatriks();
         }
-
-
-
         double count = 0;
         for(i = 0; i < x.brs ; i++){
             for(j = 0; j < x.kol ; j++){
