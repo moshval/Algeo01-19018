@@ -333,12 +333,11 @@ public class Matriks {
         }
     }
     
-    public Matriks echelon ()
+    public Matriks echelon () // Membuat (membalikkan) matriks echelon
     {
     	int i,j,k;
     	int N = this.brs;
     	int O = this.kol;
-    	//double[][] M1 = new double[N+1][O+1];
     	Matriks M1 = new Matriks ();
     	Matriks M2 = new Matriks ();
     	M1.brs = N+1;
@@ -358,20 +357,21 @@ public class Matriks {
 	    while( i<=N && j<=O )
 	    {
             k = i;
-	        while( k<=N && M1.M[k][j]==0 ) k++;
-
+	        while( k<=N && M1.M[k][j]==0 ) 
+	        	k++;
+	        
 	        if( k<=N )
 	        {
 	            if( k!=i ) 
 	            {
-	               swap(M1.M, i, k, j);
+	            	swapOBE(M1, i, k, j);
 	            }
 
 	            if( M1.M[i][j]!=1 )
 	            {
-	               divide(M1.M, i, j);
+	               divide(M1, i, j);
 	            }
-	            eliminateRE(M1.M, i, j);
+	            eliminateRE(M1, i, j, i);
 	            i++;
 	         }
 	         j++;
@@ -388,7 +388,7 @@ public class Matriks {
 	    return M2;
     }
     
-    public Matriks reducedEchelon ()
+    public Matriks reducedEchelon () // Membuat (membalikkan) matriks reduced echelon
     {
     	int i,j,k;
     	int N = this.brs;
@@ -412,19 +412,20 @@ public class Matriks {
 	    while( i<=N && j<=O )
 	    {
 	        k = i;
-	        while( k<=N && M1.M[k][j]==0 ) k++;
+	        while( k<=N && M1.M[k][j]==0 )
+	        	k++;
 	        if( k<=N )
 	        {
 	            if( k!=i ) 
 	            {
-	               swap(M1.M, i, k, j);
+	            	swapOBE(M1, i, k, j);
 	            }
 
 	            if( M1.M[i][j]!=1 )
 	            {
-	               divide(M1.M, i, j);
+	            	divide(M1, i, j);
 	            }
-	            eliminateRRE(M1.M, i, j);
+	            eliminateRE(M1, i, j, 1);
 	            i++;
 	         }
 	         j++;
@@ -438,64 +439,54 @@ public class Matriks {
 	    }
 	    return M2;
     }
-    	
-    public void eliminateRRE (double[][] M, int i, int j)
+    
+    public void eliminateRE (Matriks M, int i, int j, int l) // Mengeliminasi element non-zero pada matriks
     {
-    	int n = M.length - 1;
-	    int m = M[0].length - 1;
-	    for(int p=1; p<=n; p++)
+    	int k,n,m,q;
+    	double factor;
+	    n = M.brs;
+	    m = M.kol;
+	    for(k=l; k<=n; k++)
 	    {
-	       if( p!=i && M[p][j]!=0 )
+	       if( k!=i && M.M[k][j]!=0 )
 	       {
-	          for(int q=j+1; q<=m; q++)
+	          for(q=j+1; q<=m; q++)
 	          {
-	             M[p][q] -= M[p][j]*M[i][q];
+	        	  factor = M.M[i][q];
+	        	  M.M[k][q] -= M.M[k][j]*factor;
 	          }
-	          M[p][j] = 0;
+	          M.M[k][j] = 0;
 	       }
 	    }
     }
     
-    public void eliminateRE (double[][] M, int i, int j)
+    public void divide (Matriks M, int i, int j) // Membagi matriks supaya M[i][j]==1
     {
-    	int n = M.length - 1;
-	    int m = M[0].length - 1;
-	    for(int p=i; p<=n; p++)
+    	int k,m; 
+    	double factor;
+    	m = M.kol;
+    	factor = M.M[i][j];
+	    for(k=j+1; k<m; k++)
 	    {
-	       if( p!=i && M[p][j]!=0 )
-	       {
-	          for(int q=j+1; q<=m; q++)
-	          {
-	             M[p][q] -= M[p][j]*M[i][q];
-	          }
-	          M[p][j] = 0;
-	       }
+	    	M.M[i][k] /= factor;
 	    }
-    }
-    
-    public void divide (double[][] M, int i, int j)
-    {
-	    int k;  
-    	int m = M[0].length - 1;
-	    for(k=j+1; k<=m; k++)
-	    {
-	    	M[i][k] /= M[i][j];
-	    }
-	    M[i][j] = 1;
+	    M.M[i][j] = 1;
 	}
     
-    static void swap(double[][] M, int i, int k, int j)
+    static void swapOBE (Matriks M, int i, int k, int j) // Swap row matriks pada operasi OBE
     {
-	      int m = M[0].length - 1;
-	      double temp;
-	      for(int q=j; q<=m; q++){
-	         temp = M[i][q];
-	         M[i][q] = M[k][q];
-	         M[k][q] = temp;
-	      }
+    	int m,q;
+	    double temp;
+    	m = M.kol;
+	    for(q=j; q<m; q++)
+	    {
+	    	temp = M.M[i][q];
+	    	M.M[i][q] = M.M[k][q];
+	    	M.M[k][q] = temp;
+	    }
 	}
     
-    public void splGaussJordan (Matriks M) 
+    public void splGaussJordan (Matriks M) // Memberikan solusi SPL dengan metode GaussJordan
     {
         M=M.reducedEchelon();
         System.out.println("Matriks hasil eliminasi Gauss-Jordan : ");
@@ -507,9 +498,9 @@ public class Matriks {
     	int N = M.brs;
     	int O = M.kol;
     	     
-        // flag == 1 berarti ada solusi unik
-        // flag == 2 berarti solusi parametrik
-        // flag == 3 berarti tidak mempunyai solusi
+        // mark == 1 berarti ada solusi unik
+        // mark == 2 berarti solusi parametrik
+        // mark == 3 berarti tidak mempunyai solusi
 
         if (N == O-1) {
         	mark = 1;
@@ -539,7 +530,7 @@ public class Matriks {
     	
     }
     
-    public void splGauss (Matriks M) 
+    public void splGauss (Matriks M) // Memberikan solusi SPL dengan metode Gauss
     {
         M=M.echelon();
         System.out.println("Matriks hasil eliminasi Gauss : ");
