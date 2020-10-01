@@ -635,6 +635,7 @@ public class Matriks {
             }
             String piv ="";
             String tabs ="";
+            String index="";
             int ipar = 1;
             for (int k = 0; k < M.brs; k++) {
                 if(pivot[k]!=-1){
@@ -646,13 +647,15 @@ public class Matriks {
                     for (int l = 1; l <= tabidx[k][0]; l++) {
                         if(tabsol.M[k][l] > 0){
                             tabs = String.format("%.4f",tabsol.M[k][l]);
-                            sol+=" + " + tabs + "a" + Integer.toString(ipar);
+                            index = String.format("%d",tabidx[k][l]+1);
+                            sol+=" + " + tabs + "X" + index;
                             ipar++;
 
                             }
                         else if(tabsol.M[k][l] < 0){
                             tabs = String.format("%.4f",Math.abs(tabsol.M[k][l]));
-                            sol+=" - " + tabs + "a" + Integer.toString(ipar);
+                            index = String.format("%d",tabidx[k][l]+1);
+                            sol+=" - " + tabs + "X" + index;
                             ipar++;
                             
                         }
@@ -672,16 +675,16 @@ public class Matriks {
             }
 
             if(param){
-                sol+="variabel bebas\nVariabel bebas diatas jika direpresentasikan dalam bentuk parametrik :\n";
+                sol+="variabel bebas\n";
              }
-            int cprm = 1;
+           /* int cprm = 1;
             for (int d = 0; d < M.kol-1; d++) {
                 if(Sol[d]== -999){
                     int tmp = d+1;
                     sol+="X" + Integer.toString(tmp)+" = "+"a"+Integer.toString(cprm)+"\n";
                     cprm++;
                 }
-            }
+            } */
 
             System.out.println("Solusi dari SPL anda adalah : ");
             System.out.println(sol);
