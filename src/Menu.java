@@ -266,6 +266,8 @@ public class Menu {
             else{
                 if(input==1){
                     // Gauss Jordan Invers
+                	M = M.Merged_Identity();
+                    M = M.reducedEchelon();
                     M = M.Invers_gauss();
                     M.tulisMatriks();
                     System.out.println();
