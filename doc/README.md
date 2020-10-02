@@ -25,7 +25,8 @@ Cara memastikan (untuk OS Windows) : Jalankan terminal (cmd) -> ketik "java -ver
 Cara menjalankan program (untuk OS Windows):
 1. Versi 1, langsung run bytecode (bila sudah terdapat file .class di folder bin)\
     Jalankan terminal(cmd)\
-    Pastikan sudah berada di folder "Algeo01-19018", jika belum silahkan change directory menggunakan perintah "cd" (tanpa tanda kutip).
+    Pastikan sudah berada di folder "Algeo01-19018", jika belum silahkan change directory menggunakan perintah "cd" (tanpa tanda kutip).\
+    Lalu, pada cmd ketik(masukkan perintah) : 
     ```
     cd bin
     Java Menu
@@ -33,12 +34,13 @@ Cara menjalankan program (untuk OS Windows):
 
 2. Versi 2, membuat bytecode dari file .java \
     Jalankan terminal(cmd)\
-    Pastikan sudah berada di folder "Algeo01-19018", jika belum silahkan change directory menggunakan perintah "cd" (tanpa tanda kutip).
+    Pastikan sudah berada di folder "Algeo01-19018", jika belum silahkan change directory menggunakan perintah "cd" (tanpa tanda kutip).\
+    Lalu, pada cmd ketik(masukkan perintah) :
     ```
     cd src
     javac *.java && java Menu
     ```
-
+Catatan : akhiri tiap perintah dengan Enter\
 Ketika sudah dijalankan, anda akan "disambut" oleh tampilan berikut :
 ```
 ------------------------------------------------
