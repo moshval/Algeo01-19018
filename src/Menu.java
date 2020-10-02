@@ -195,7 +195,8 @@ public class Menu {
                 if(input==1){
                     //Gauss 
                     det = M.detGJ();
-                    sol +="Determinan Matriks anda adalah "+Double.toString(det);
+                    String Det = String.format("%.4f",det);
+                    sol +="Determinan Matriks anda adalah "+Det;
                     System.out.println(sol);
                     System.out.print("Apakah anda ingin menyimpan output operasi ini(1) atau tidak(0)? ");
                     ip = in.nextInt();

@@ -268,13 +268,13 @@ public class Matriks {
                         k = j;
                     }
                 }
-                if(dgj.M[k][i]==0.0000){
+                if(dgj.M[k][i]==0.000){
                     det = 0.0000;
                     break;
                 }
 
                 dgj.swapBrs(dgj, i, k);
-                if(i!=k) det*= -1.0000;
+                if(i!=k) det*= -1;
                 det*= dgj.M[i][i];
                 for (int l = i+1; l < dgj.brs; l++) {
                     dgj.M[i][l] = dgj.M[i][l] / dgj.M[i][i];
@@ -288,6 +288,7 @@ public class Matriks {
                 }
                 
             }
+            if(Math.abs(det)<1e-9) det = 0.0000;
 
         }
 
@@ -1083,15 +1084,13 @@ public class Matriks {
             D = C.reducedEchelon();
             K = D.Invers_gauss();
             double det = A.detGJ() + 0.0000;
-            if(det == 0.0000) {
-                System.out.println("Matriks hasil metode invers : ");
+            if(det != 0.0000) {
                 Sol = multiple(K, B);
-                Sol.tulisMatriks();
                 for (int i = 0; i < Sol.brs; i++) {
                     int idx = i + 1;
                     sol += "X" + Integer.toString(idx) + " = " + Double.toString(Sol.M[i][0]) + "\n";
                 }
-                System.out.println("Hasil penyelesaian : ");
+                System.out.println("Hasil penyelesaian SPL metode invers : ");
                 System.out.println(sol);
     
                 System.out.println("Apakah anda mau menyimpan hasil ke file? (0/1) : ");
