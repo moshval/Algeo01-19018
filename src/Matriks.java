@@ -1104,7 +1104,7 @@ public class Matriks {
                     tulisfileSPL(sol);
                 }
             }else{
-                System.out.println("Matriks tidak memiliki solusi\n");
+                System.out.println("Matriks tidak memiliki solusi jika menggunakan metode ini. Silakan gunakan metode lain.\n");
             }
         }
 
