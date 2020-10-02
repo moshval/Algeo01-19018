@@ -10,7 +10,14 @@ Semester  I Tahun 2020/2021
 # Deskripsi Singkat : 
 Program yang dapat mengkalkulasikan Sistem Persamaan Linier , Determinan, Invers Matriks, Interpolasi Polinom, dan Regresi Linear Berganda
 dengan memanfaatkan properti matriks.\
-Program dibuat dengan bahasa Java (JRE 15).
+Program dibuat dengan bahasa Java (JRE 15).\
+Masukan dapat berupa input dari keyboard maupun file text.\
+Untuk mengkalkulasikan masukan, terdapat berbagai metode tiap operasinya, di antaranya :
+1. Operasi Sistem Persamaan Linier : Metode eliminasi Gauss, eliminasi Gauss-Jordan, matriks balikan, dan kaidah Cramer.
+2. Operasi Determinan : Metode reduksi baris dan ekspansi kofaktor-minor.
+3. Operasi Invers : Metode eliminasi Gauss-Jordan(reduksi baris) dan adjoin.
+4. Operasi Interpolasi Polinom : Metode eliminasi Gauss-Jordan dan kaidah Cramer.
+5. Operasi Regresi Linier Berganda : Metode eliminasi Gauss dan invers matriks.
 
 # Cara menjalankan :
 Pastikan JRE sudah terpasang di perangkat anda.\
